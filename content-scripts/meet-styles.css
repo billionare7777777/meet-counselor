@@ -1,0 +1,115 @@
+/* Styles for Meet Counselor integration */
+.meet-counselor-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #1a73e8;
+  color: white;
+  cursor: pointer;
+  margin: 0 8px;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.meet-counselor-button:hover {
+  background-color: #1557b0;
+  transform: scale(1.05);
+}
+
+.meet-counselor-button.active {
+  background-color: #ea4335;
+  animation: pulse 2s infinite;
+}
+
+.meet-counselor-button.active:hover {
+  background-color: #d33b2c;
+}
+
+.counselor-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(234, 67, 53, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(234, 67, 53, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(234, 67, 53, 0);
+  }
+}
+
+/* Meet Counselor status indicator */
+.meet-counselor-status {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  z-index: 10000;
+  display: none;
+}
+
+.meet-counselor-status.active {
+  display: block;
+}
+
+.meet-counselor-status.recording {
+  background: rgba(234, 67, 53, 0.9);
+}
+
+/* Transcript overlay */
+.meet-counselor-transcript {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 16px;
+  border-radius: 8px;
+  font-size: 16px;
+  line-height: 1.4;
+  z-index: 10000;
+  max-height: 200px;
+  overflow-y: auto;
+  display: none;
+}
+
+.meet-counselor-transcript.active {
+  display: block;
+}
+
+.meet-counselor-transcript .transcript-item {
+  margin-bottom: 8px;
+  padding: 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.meet-counselor-transcript .transcript-item:last-child {
+  margin-bottom: 0;
+}
+
+.meet-counselor-transcript .transcript-speaker {
+  font-weight: bold;
+  color: #1a73e8;
+  margin-right: 8px;
+}
+
+.meet-counselor-transcript .transcript-time {
+  font-size: 12px;
+  color: #999;
+  float: right;
+}
+

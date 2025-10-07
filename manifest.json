@@ -1,0 +1,44 @@
+{
+  "manifest_version": 3,
+  "name": "Meet Counselor",
+  "version": "1.0.0",
+  "description": "AI-powered conversation assistant for Google Meet with real-time translation",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting",
+    "tabs",
+    "background"
+  ],
+  "host_permissions": [
+    "https://meet.google.com/*",
+    "https://translate.google.com/*",
+    "https://api.openai.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://meet.google.com/*"],
+      "js": ["content-scripts/meet-content.js"],
+      "css": ["content-scripts/meet-styles.css"]
+    },
+    {
+      "matches": ["https://translate.google.com/*"],
+      "js": ["content-scripts/translate-content.js"],
+      "css": ["content-scripts/translate-styles.css"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Meet Counselor"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["assets/*", "components/*"],
+      "matches": ["https://meet.google.com/*", "https://translate.google.com/*"]
+    }
+  ]
+}
+

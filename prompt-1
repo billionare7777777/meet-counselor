@@ -1,0 +1,9 @@
+I'm trying to create a Google Extension that performs the following functions:
+
+I and others are on a call using Google Meet (http://meet.google.com/).
+During the call, everything the others say should be entered in real time into the left-hand side (English input section) of Google Translate (https://translate.google.com/).
+The Google Extension interface, which runs on the right-hand side of Google Translate, should have buttons for Settings, Create Conversation, and Create Question.
+Clicking Settings opens a modal window with options for My Information (location, name, age, gender, profile, experience, and other information), the Other Party's Information (location, name, gender, and other information), Conversation History, Additional Settings, and Prompt. Entering these options and clicking the Save button will save the information for future use.
+The Create Conversation button should have two options: Create Answer, which answers the other party's questions, and Create Chat, which creates a private conversation unrelated to business. The Create Question button consists of options for questions to be asked at the beginning of a conversation, during a conversation, and at the end of a conversation.
+The generated conversation should be displayed on the left below, with a translation to be displayed on the right.
+All conversations, including my own, should be archived and applied to all questions and conversations. Furthermore, all generated conversations should be formatted in a manner consistent with the typical chatting experience of American citizens.
