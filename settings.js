@@ -15,6 +15,9 @@ class SettingsController {
     // Set up event listeners
     this.setupEventListeners();
     
+    // Load form values from localStorage
+    this.loadFormValuesFromLocalStorage();
+    
     // Update UI with loaded data
     this.updateUI();
     
@@ -60,10 +63,20 @@ class SettingsController {
       this.importHistory();
     });
 
+    document.getElementById('clear-localstorage').addEventListener('click', () => {
+      this.clearLocalStorage();
+    });
+
     // Auto-save on input changes
     document.querySelectorAll('input, select, textarea').forEach(input => {
       input.addEventListener('change', () => {
+        this.saveFieldToLocalStorage(input);
         this.autoSave();
+      });
+      
+      // Also save on input for real-time saving
+      input.addEventListener('input', () => {
+        this.saveFieldToLocalStorage(input);
       });
     });
 
@@ -124,42 +137,42 @@ class SettingsController {
     const form = document.getElementById('settings-form');
     const formData = new FormData(form);
     
-    // My Information
-    this.setFieldValue('myName', this.settings.myInfo?.name || '');
-    this.setFieldValue('myAge', this.settings.myInfo?.age || '');
-    this.setFieldValue('myLocation', this.settings.myInfo?.location || '');
-    this.setFieldValue('myGender', this.settings.myInfo?.gender || '');
-    this.setFieldValue('myOccupation', this.settings.myInfo?.occupation || '');
-    this.setFieldValue('myProfile', this.settings.myInfo?.profile || '');
-    this.setFieldValue('myExperience', this.settings.myInfo?.experience || '');
-    this.setFieldValue('myCommunicationStyle', this.settings.myInfo?.communicationStyle || '');
+    // My Information - prioritize localStorage over settings
+    this.setFieldValue('myName', this.getFieldValueFromStorage('myName') || this.settings.myInfo?.name || '');
+    this.setFieldValue('myAge', this.getFieldValueFromStorage('myAge') || this.settings.myInfo?.age || '');
+    this.setFieldValue('myLocation', this.getFieldValueFromStorage('myLocation') || this.settings.myInfo?.location || '');
+    this.setFieldValue('myGender', this.getFieldValueFromStorage('myGender') || this.settings.myInfo?.gender || '');
+    this.setFieldValue('myOccupation', this.getFieldValueFromStorage('myOccupation') || this.settings.myInfo?.occupation || '');
+    this.setFieldValue('myProfile', this.getFieldValueFromStorage('myProfile') || this.settings.myInfo?.profile || '');
+    this.setFieldValue('myExperience', this.getFieldValueFromStorage('myExperience') || this.settings.myInfo?.experience || '');
+    this.setFieldValue('myCommunicationStyle', this.getFieldValueFromStorage('myCommunicationStyle') || this.settings.myInfo?.communicationStyle || '');
 
-    // Other Party's Information
-    this.setFieldValue('otherName', this.settings.otherInfo?.name || '');
-    this.setFieldValue('otherLocation', this.settings.otherInfo?.location || '');
-    this.setFieldValue('otherGender', this.settings.otherInfo?.gender || '');
-    this.setFieldValue('otherAgeRange', this.settings.otherInfo?.ageRange || '');
-    this.setFieldValue('otherRelationship', this.settings.otherInfo?.relationship || '');
-    this.setFieldValue('otherContext', this.settings.otherInfo?.context || '');
+    // Other Party's Information - prioritize localStorage over settings
+    this.setFieldValue('otherName', this.getFieldValueFromStorage('otherName') || this.settings.otherInfo?.name || '');
+    this.setFieldValue('otherLocation', this.getFieldValueFromStorage('otherLocation') || this.settings.otherInfo?.location || '');
+    this.setFieldValue('otherGender', this.getFieldValueFromStorage('otherGender') || this.settings.otherInfo?.gender || '');
+    this.setFieldValue('otherAgeRange', this.getFieldValueFromStorage('otherAgeRange') || this.settings.otherInfo?.ageRange || '');
+    this.setFieldValue('otherRelationship', this.getFieldValueFromStorage('otherRelationship') || this.settings.otherInfo?.relationship || '');
+    this.setFieldValue('otherContext', this.getFieldValueFromStorage('otherContext') || this.settings.otherInfo?.context || '');
 
-    // Additional Settings
-    this.setFieldValue('autoTranslate', this.settings.additional?.autoTranslate || false);
-    this.setFieldValue('saveHistory', this.settings.additional?.saveHistory !== false);
-    this.setFieldValue('autoGenerateResponses', this.settings.additional?.autoGenerateResponses || false);
-    this.setFieldValue('targetLanguage', this.settings.additional?.targetLanguage || 'en');
-    this.setFieldValue('responseStyle', this.settings.additional?.responseStyle || 'balanced');
-    this.setFieldValue('responseLength', this.settings.additional?.responseLength || 'medium');
-    this.setFieldValue('conversationContext', this.settings.additional?.conversationContext || 'general');
+    // Additional Settings - prioritize localStorage over settings
+    this.setFieldValue('autoTranslate', this.getFieldValueFromStorage('autoTranslate') !== null ? this.getFieldValueFromStorage('autoTranslate') : (this.settings.additional?.autoTranslate || false));
+    this.setFieldValue('saveHistory', this.getFieldValueFromStorage('saveHistory') !== null ? this.getFieldValueFromStorage('saveHistory') : (this.settings.additional?.saveHistory !== false));
+    this.setFieldValue('autoGenerateResponses', this.getFieldValueFromStorage('autoGenerateResponses') !== null ? this.getFieldValueFromStorage('autoGenerateResponses') : (this.settings.additional?.autoGenerateResponses || false));
+    this.setFieldValue('targetLanguage', this.getFieldValueFromStorage('targetLanguage') || this.settings.additional?.targetLanguage || 'en');
+    this.setFieldValue('responseStyle', this.getFieldValueFromStorage('responseStyle') || this.settings.additional?.responseStyle || 'balanced');
+    this.setFieldValue('responseLength', this.getFieldValueFromStorage('responseLength') || this.settings.additional?.responseLength || 'medium');
+    this.setFieldValue('conversationContext', this.getFieldValueFromStorage('conversationContext') || this.settings.additional?.conversationContext || 'general');
 
-    // API Keys
-    this.setFieldValue('openaiApiKey', this.settings.apiKeys?.openai || '');
+    // API Keys - prioritize localStorage over settings
+    this.setFieldValue('openaiApiKey', this.getFieldValueFromStorage('openaiApiKey') || this.settings.apiKeys?.openai || '');
     this.updateApiKeyStatus();
 
-    // Prompt Settings
-    this.setFieldValue('customPrompt', this.settings.prompt?.customPrompt || '');
-    this.setFieldValue('responseExamples', this.settings.prompt?.responseExamples || '');
-    this.setFieldValue('conversationGoals', this.settings.prompt?.conversationGoals || '');
-    this.setFieldValue('avoidTopics', this.settings.prompt?.avoidTopics || '');
+    // Prompt Settings - prioritize localStorage over settings
+    this.setFieldValue('customPrompt', this.getFieldValueFromStorage('customPrompt') || this.settings.prompt?.customPrompt || '');
+    this.setFieldValue('responseExamples', this.getFieldValueFromStorage('responseExamples') || this.settings.prompt?.responseExamples || '');
+    this.setFieldValue('conversationGoals', this.getFieldValueFromStorage('conversationGoals') || this.settings.prompt?.conversationGoals || '');
+    this.setFieldValue('avoidTopics', this.getFieldValueFromStorage('avoidTopics') || this.settings.prompt?.avoidTopics || '');
   }
 
   setFieldValue(fieldName, value) {
@@ -252,8 +265,14 @@ class SettingsController {
         await chrome.storage.local.remove(['userSettings']);
         this.settings = {};
         
+        // Clear localStorage
+        this.clearAllLocalStorage();
+        
         // Reset form
         document.getElementById('settings-form').reset();
+        
+        // Update API key status
+        this.updateApiKeyStatus();
         
         this.showSuccess('Settings reset to defaults');
       } catch (error) {
@@ -421,6 +440,93 @@ class SettingsController {
   isValidOpenAIKey(apiKey) {
     // Basic validation for OpenAI API key format
     return apiKey && apiKey.startsWith('sk-') && apiKey.length > 20;
+  }
+
+  // localStorage methods for form persistence
+  saveFieldToLocalStorage(field) {
+    const fieldName = field.name || field.id;
+    if (!fieldName) return;
+
+    let value;
+    if (field.type === 'checkbox') {
+      value = field.checked;
+    } else {
+      value = field.value;
+    }
+
+    try {
+      localStorage.setItem(`meet-counselor-${fieldName}`, JSON.stringify(value));
+    } catch (error) {
+      console.warn('Failed to save field to localStorage:', error);
+    }
+  }
+
+  loadFieldFromLocalStorage(fieldName) {
+    try {
+      const stored = localStorage.getItem(`meet-counselor-${fieldName}`);
+      return stored ? JSON.parse(stored) : null;
+    } catch (error) {
+      console.warn('Failed to load field from localStorage:', error);
+      return null;
+    }
+  }
+
+  getFieldValueFromStorage(fieldName) {
+    return this.loadFieldFromLocalStorage(fieldName);
+  }
+
+  loadFormValuesFromLocalStorage() {
+    // Get all form fields
+    const form = document.getElementById('settings-form');
+    if (!form) return;
+
+    const fields = form.querySelectorAll('input, select, textarea');
+    
+    fields.forEach(field => {
+      const fieldName = field.name || field.id;
+      if (!fieldName) return;
+
+      const storedValue = this.loadFieldFromLocalStorage(fieldName);
+      if (storedValue !== null) {
+        if (field.type === 'checkbox') {
+          field.checked = storedValue;
+        } else {
+          field.value = storedValue;
+        }
+      }
+    });
+  }
+
+  clearAllLocalStorage() {
+    try {
+      const keys = Object.keys(localStorage);
+      keys.forEach(key => {
+        if (key.startsWith('meet-counselor-')) {
+          localStorage.removeItem(key);
+        }
+      });
+    } catch (error) {
+      console.warn('Failed to clear localStorage:', error);
+    }
+  }
+
+  clearLocalStorage() {
+    if (confirm('Are you sure you want to clear all form data? This will reset all form fields to their default values. This action cannot be undone.')) {
+      try {
+        this.clearAllLocalStorage();
+        
+        // Reset form
+        document.getElementById('settings-form').reset();
+        
+        // Update API key status
+        this.updateApiKeyStatus();
+        
+        this.showSuccess('Form data cleared successfully');
+      } catch (error) {
+        console.error('Error clearing localStorage:', error);
+        this.showError('Failed to clear form data');
+      }
+    }
   }
 
   showSuccess(message) {

@@ -77,6 +77,9 @@ class TranslateIntegration {
 
     // Set up event listeners
     this.setupEventListeners();
+    
+    // Load conversation input from localStorage
+    this.loadConversationInputFromLocalStorage();
   }
 
   setupEventListeners() {
@@ -106,6 +109,11 @@ class TranslateIntegration {
         e.preventDefault();
         this.sendResponse();
       }
+    });
+
+    // Auto-save conversation input to localStorage
+    document.getElementById('conversation-input').addEventListener('input', (e) => {
+      this.saveFieldToLocalStorage(e.target);
     });
   }
 
@@ -194,8 +202,9 @@ class TranslateIntegration {
     // Update conversation display
     this.updateConversationDisplay();
 
-    // Clear input
+    // Clear input and localStorage
     inputElement.value = '';
+    this.saveFieldToLocalStorage(inputElement);
 
     // Send to background script
     chrome.runtime.sendMessage({
@@ -333,6 +342,19 @@ class TranslateIntegration {
   }
 
   setupModalEventListeners(modal) {
+    // Load saved values from localStorage
+    this.loadModalValuesFromLocalStorage(modal);
+    
+    // Auto-save form values to localStorage
+    modal.querySelectorAll('input, select, textarea').forEach(field => {
+      field.addEventListener('input', () => {
+        this.saveFieldToLocalStorage(field);
+      });
+      field.addEventListener('change', () => {
+        this.saveFieldToLocalStorage(field);
+      });
+    });
+
     // Tab switching
     modal.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -608,6 +630,63 @@ class TranslateIntegration {
     setTimeout(() => {
       notification.remove();
     }, 3000);
+  }
+
+  // localStorage methods for form persistence
+  saveFieldToLocalStorage(field) {
+    const fieldName = field.name || field.id;
+    if (!fieldName) return;
+
+    let value;
+    if (field.type === 'checkbox') {
+      value = field.checked;
+    } else {
+      value = field.value;
+    }
+
+    try {
+      localStorage.setItem(`meet-counselor-${fieldName}`, JSON.stringify(value));
+    } catch (error) {
+      console.warn('Failed to save field to localStorage:', error);
+    }
+  }
+
+  loadFieldFromLocalStorage(fieldName) {
+    try {
+      const stored = localStorage.getItem(`meet-counselor-${fieldName}`);
+      return stored ? JSON.parse(stored) : null;
+    } catch (error) {
+      console.warn('Failed to load field from localStorage:', error);
+      return null;
+    }
+  }
+
+  loadModalValuesFromLocalStorage(modal) {
+    const fields = modal.querySelectorAll('input, select, textarea');
+    
+    fields.forEach(field => {
+      const fieldName = field.name || field.id;
+      if (!fieldName) return;
+
+      const storedValue = this.loadFieldFromLocalStorage(fieldName);
+      if (storedValue !== null) {
+        if (field.type === 'checkbox') {
+          field.checked = storedValue;
+        } else {
+          field.value = storedValue;
+        }
+      }
+    });
+  }
+
+  loadConversationInputFromLocalStorage() {
+    const conversationInput = document.getElementById('conversation-input');
+    if (!conversationInput) return;
+
+    const storedValue = this.loadFieldFromLocalStorage('conversation-input');
+    if (storedValue !== null && storedValue.trim() !== '') {
+      conversationInput.value = storedValue;
+    }
   }
 
   handleMessage(message, sender, sendResponse) {

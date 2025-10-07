@@ -122,6 +122,13 @@ Customize how the AI generates responses:
 - Conversation context (business, casual, educational)
 - Custom prompts and examples
 
+### Form Persistence
+- **Auto-save**: All form inputs are automatically saved to localStorage
+- **Page Reload**: Form values persist across page reloads and browser sessions
+- **Real-time Saving**: Changes are saved as you type
+- **Cross-tab Sync**: Settings are shared across extension tabs
+- **Data Management**: Clear form data or reset to defaults anytime
+
 ### Translation Settings
 - Target language selection
 - Auto-translation preferences

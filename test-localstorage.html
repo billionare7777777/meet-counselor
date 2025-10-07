@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meet Counselor - localStorage Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .form-group {
+            margin: 10px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background: #1a73e8;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #1557b0;
+        }
+        .danger {
+            background: #ea4335;
+        }
+        .danger:hover {
+            background: #d33b2c;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background: #e8f5e8;
+            color: #137333;
+            border: 1px solid #34a853;
+        }
+        .info {
+            background: #e8f0fe;
+            color: #1a73e8;
+            border: 1px solid #1a73e8;
+        }
+    </style>
+</head>
+<body>
+    <h1>Meet Counselor - localStorage Test</h1>
+    <p>This page tests the localStorage functionality for form persistence.</p>
+
+    <div class="test-section">
+        <h2>Test Form Fields</h2>
+        <form id="test-form">
+            <div class="form-group">
+                <label for="test-name">Name:</label>
+                <input type="text" id="test-name" name="testName" placeholder="Enter your name">
+            </div>
+            
+            <div class="form-group">
+                <label for="test-email">Email:</label>
+                <input type="email" id="test-email" name="testEmail" placeholder="Enter your email">
+            </div>
+            
+            <div class="form-group">
+                <label for="test-age">Age:</label>
+                <input type="number" id="test-age" name="testAge" placeholder="Enter your age">
+            </div>
+            
+            <div class="form-group">
+                <label for="test-gender">Gender:</label>
+                <select id="test-gender" name="testGender">
+                    <option value="">Select gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="test-bio">Bio:</label>
+                <textarea id="test-bio" name="testBio" rows="4" placeholder="Tell us about yourself"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="test-newsletter" name="testNewsletter">
+                    Subscribe to newsletter
+                </label>
+            </div>
+            
+            <div class="form-group">
+                <button type="button" onclick="saveForm()">Save Form</button>
+                <button type="button" onclick="loadForm()">Load Form</button>
+                <button type="button" onclick="clearForm()" class="danger">Clear Form</button>
+                <button type="button" onclick="clearLocalStorage()" class="danger">Clear localStorage</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="test-section">
+        <h2>localStorage Status</h2>
+        <div id="status" class="status info">
+            Ready to test localStorage functionality
+        </div>
+        <button type="button" onclick="showLocalStorage()">Show localStorage Contents</button>
+        <pre id="localStorage-content" style="background: #f5f5f5; padding: 10px; border-radius: 4px; margin-top: 10px; display: none;"></pre>
+    </div>
+
+    <script>
+        // localStorage utility functions
+        function saveFieldToLocalStorage(field) {
+            const fieldName = field.name || field.id;
+            if (!fieldName) return;
+
+            let value;
+            if (field.type === 'checkbox') {
+                value = field.checked;
+            } else {
+                value = field.value;
+            }
+
+            try {
+                localStorage.setItem(`meet-counselor-${fieldName}`, JSON.stringify(value));
+                showStatus(`Saved ${fieldName} to localStorage`, 'success');
+            } catch (error) {
+                showStatus(`Failed to save ${fieldName}: ${error.message}`, 'error');
+            }
+        }
+
+        function loadFieldFromLocalStorage(fieldName) {
+            try {
+                const stored = localStorage.getItem(`meet-counselor-${fieldName}`);
+                return stored ? JSON.parse(stored) : null;
+            } catch (error) {
+                showStatus(`Failed to load ${fieldName}: ${error.message}`, 'error');
+                return null;
+            }
+        }
+
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+        }
+
+        // Form functions
+        function saveForm() {
+            const form = document.getElementById('test-form');
+            const fields = form.querySelectorAll('input, select, textarea');
+            
+            fields.forEach(field => {
+                saveFieldToLocalStorage(field);
+            });
+            
+            showStatus('Form saved to localStorage', 'success');
+        }
+
+        function loadForm() {
+            const form = document.getElementById('test-form');
+            const fields = form.querySelectorAll('input, select, textarea');
+            
+            fields.forEach(field => {
+                const fieldName = field.name || field.id;
+                if (!fieldName) return;
+
+                const storedValue = loadFieldFromLocalStorage(fieldName);
+                if (storedValue !== null) {
+                    if (field.type === 'checkbox') {
+                        field.checked = storedValue;
+                    } else {
+                        field.value = storedValue;
+                    }
+                }
+            });
+            
+            showStatus('Form loaded from localStorage', 'success');
+        }
+
+        function clearForm() {
+            document.getElementById('test-form').reset();
+            showStatus('Form cleared', 'info');
+        }
+
+        function clearLocalStorage() {
+            if (confirm('Are you sure you want to clear all localStorage data?')) {
+                try {
+                    const keys = Object.keys(localStorage);
+                    keys.forEach(key => {
+                        if (key.startsWith('meet-counselor-')) {
+                            localStorage.removeItem(key);
+                        }
+                    });
+                    showStatus('localStorage cleared', 'success');
+                } catch (error) {
+                    showStatus(`Failed to clear localStorage: ${error.message}`, 'error');
+                }
+            }
+        }
+
+        function showLocalStorage() {
+            const content = document.getElementById('localStorage-content');
+            const meetCounselorKeys = {};
+            
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith('meet-counselor-')) {
+                    meetCounselorKeys[key] = localStorage.getItem(key);
+                }
+            }
+            
+            content.textContent = JSON.stringify(meetCounselorKeys, null, 2);
+            content.style.display = content.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Auto-save functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('test-form');
+            const fields = form.querySelectorAll('input, select, textarea');
+            
+            // Auto-save on input changes
+            fields.forEach(field => {
+                field.addEventListener('input', () => {
+                    saveFieldToLocalStorage(field);
+                });
+                field.addEventListener('change', () => {
+                    saveFieldToLocalStorage(field);
+                });
+            });
+            
+            // Load form on page load
+            loadForm();
+            
+            showStatus('Page loaded - auto-save enabled', 'success');
+        });
+    </script>
+</body>
+</html>
