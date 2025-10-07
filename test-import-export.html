@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meet Counselor - Import/Export Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .form-group {
+            margin: 10px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background: #1a73e8;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #1557b0;
+        }
+        .danger {
+            background: #ea4335;
+        }
+        .danger:hover {
+            background: #d33b2c;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background: #e8f5e8;
+            color: #137333;
+            border: 1px solid #34a853;
+        }
+        .error {
+            background: #fce8e6;
+            color: #d93025;
+            border: 1px solid #ea4335;
+        }
+        .info {
+            background: #e8f0fe;
+            color: #1a73e8;
+            border: 1px solid #1a73e8;
+        }
+    </style>
+</head>
+<body>
+    <h1>Meet Counselor - Import/Export Test</h1>
+    <p>This page tests the import/export functionality for My Information and Other Party's Information.</p>
+
+    <div class="test-section">
+        <h2>My Information Test</h2>
+        <form id="my-info-form">
+            <div class="form-group">
+                <label for="my-name">Name:</label>
+                <input type="text" id="my-name" name="myName" placeholder="Enter your name">
+            </div>
+            
+            <div class="form-group">
+                <label for="my-age">Age:</label>
+                <input type="number" id="my-age" name="myAge" placeholder="Enter your age">
+            </div>
+            
+            <div class="form-group">
+                <label for="my-location">Location:</label>
+                <input type="text" id="my-location" name="myLocation" placeholder="Enter your location">
+            </div>
+            
+            <div class="form-group">
+                <label for="my-gender">Gender:</label>
+                <select id="my-gender" name="myGender">
+                    <option value="">Select gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="my-occupation">Occupation:</label>
+                <input type="text" id="my-occupation" name="myOccupation" placeholder="Enter your occupation">
+            </div>
+            
+            <div class="form-group">
+                <label for="my-profile">Profile:</label>
+                <textarea id="my-profile" name="myProfile" rows="3" placeholder="Tell us about yourself"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="my-experience">Experience:</label>
+                <textarea id="my-experience" name="myExperience" rows="3" placeholder="Describe your experience"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="my-communication-style">Communication Style:</label>
+                <select id="my-communication-style" name="myCommunicationStyle">
+                    <option value="">Select style</option>
+                    <option value="formal">Formal</option>
+                    <option value="casual">Casual</option>
+                    <option value="friendly">Friendly</option>
+                    <option value="professional">Professional</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <button type="button" onclick="exportMyInfo()">Export My Info</button>
+                <button type="button" onclick="importMyInfo()">Import My Info</button>
+                <button type="button" onclick="clearMyInfo()" class="danger">Clear My Info</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="test-section">
+        <h2>Other Party's Information Test</h2>
+        <form id="other-info-form">
+            <div class="form-group">
+                <label for="other-name">Name:</label>
+                <input type="text" id="other-name" name="otherName" placeholder="Enter their name">
+            </div>
+            
+            <div class="form-group">
+                <label for="other-location">Location:</label>
+                <input type="text" id="other-location" name="otherLocation" placeholder="Enter their location">
+            </div>
+            
+            <div class="form-group">
+                <label for="other-gender">Gender:</label>
+                <select id="other-gender" name="otherGender">
+                    <option value="">Select gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="other-age-range">Age Range:</label>
+                <select id="other-age-range" name="otherAgeRange">
+                    <option value="">Select age range</option>
+                    <option value="18-25">18-25</option>
+                    <option value="26-35">26-35</option>
+                    <option value="36-45">36-45</option>
+                    <option value="46-55">46-55</option>
+                    <option value="56-65">56-65</option>
+                    <option value="65+">65+</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="other-relationship">Relationship:</label>
+                <select id="other-relationship" name="otherRelationship">
+                    <option value="">Select relationship</option>
+                    <option value="colleague">Colleague</option>
+                    <option value="client">Client</option>
+                    <option value="friend">Friend</option>
+                    <option value="family">Family</option>
+                    <option value="stranger">Stranger</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="other-context">Context:</label>
+                <textarea id="other-context" name="otherContext" rows="3" placeholder="Describe the context of your conversation"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <button type="button" onclick="exportOtherInfo()">Export Other Info</button>
+                <button type="button" onclick="importOtherInfo()">Import Other Info</button>
+                <button type="button" onclick="clearOtherInfo()" class="danger">Clear Other Info</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Status</h2>
+        <div id="status" class="status info">
+            Ready to test import/export functionality
+        </div>
+    </div>
+
+    <script>
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+        }
+
+        // My Information functions
+        function exportMyInfo() {
+            try {
+                const myInfoData = {
+                    name: document.getElementById('my-name').value,
+                    age: document.getElementById('my-age').value,
+                    location: document.getElementById('my-location').value,
+                    gender: document.getElementById('my-gender').value,
+                    occupation: document.getElementById('my-occupation').value,
+                    profile: document.getElementById('my-profile').value,
+                    experience: document.getElementById('my-experience').value,
+                    communicationStyle: document.getElementById('my-communication-style').value
+                };
+
+                const data = {
+                    type: 'My Information',
+                    data: myInfoData,
+                    exportDate: new Date().toISOString(),
+                    version: '1.0.0'
+                };
+
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `meet-counselor-my-info-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                showStatus('My Information exported successfully', 'success');
+            } catch (error) {
+                console.error('Error exporting My Information:', error);
+                showStatus('Failed to export My Information', 'error');
+            }
+        }
+
+        function importMyInfo() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                try {
+                    const text = await file.text();
+                    const data = JSON.parse(text);
+                    
+                    if (data.type === 'My Information' && data.data) {
+                        // Import the data
+                        document.getElementById('my-name').value = data.data.name || '';
+                        document.getElementById('my-age').value = data.data.age || '';
+                        document.getElementById('my-location').value = data.data.location || '';
+                        document.getElementById('my-gender').value = data.data.gender || '';
+                        document.getElementById('my-occupation').value = data.data.occupation || '';
+                        document.getElementById('my-profile').value = data.data.profile || '';
+                        document.getElementById('my-experience').value = data.data.experience || '';
+                        document.getElementById('my-communication-style').value = data.data.communicationStyle || '';
+
+                        showStatus('My Information imported successfully', 'success');
+                    } else {
+                        throw new Error('Invalid file format');
+                    }
+                } catch (error) {
+                    console.error('Error importing My Information:', error);
+                    showStatus('Failed to import My Information. Please check the file format.', 'error');
+                }
+            };
+            
+            input.click();
+        }
+
+        function clearMyInfo() {
+            if (confirm('Are you sure you want to clear all My Information? This action cannot be undone.')) {
+                const fields = ['my-name', 'my-age', 'my-location', 'my-gender', 'my-occupation', 'my-profile', 'my-experience', 'my-communication-style'];
+                
+                fields.forEach(fieldId => {
+                    document.getElementById(fieldId).value = '';
+                });
+
+                showStatus('My Information cleared successfully', 'success');
+            }
+        }
+
+        // Other Party's Information functions
+        function exportOtherInfo() {
+            try {
+                const otherInfoData = {
+                    name: document.getElementById('other-name').value,
+                    location: document.getElementById('other-location').value,
+                    gender: document.getElementById('other-gender').value,
+                    ageRange: document.getElementById('other-age-range').value,
+                    relationship: document.getElementById('other-relationship').value,
+                    context: document.getElementById('other-context').value
+                };
+
+                const data = {
+                    type: 'Other Party Information',
+                    data: otherInfoData,
+                    exportDate: new Date().toISOString(),
+                    version: '1.0.0'
+                };
+
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `meet-counselor-other-info-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                showStatus('Other Party Information exported successfully', 'success');
+            } catch (error) {
+                console.error('Error exporting Other Party Information:', error);
+                showStatus('Failed to export Other Party Information', 'error');
+            }
+        }
+
+        function importOtherInfo() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                try {
+                    const text = await file.text();
+                    const data = JSON.parse(text);
+                    
+                    if (data.type === 'Other Party Information' && data.data) {
+                        // Import the data
+                        document.getElementById('other-name').value = data.data.name || '';
+                        document.getElementById('other-location').value = data.data.location || '';
+                        document.getElementById('other-gender').value = data.data.gender || '';
+                        document.getElementById('other-age-range').value = data.data.ageRange || '';
+                        document.getElementById('other-relationship').value = data.data.relationship || '';
+                        document.getElementById('other-context').value = data.data.context || '';
+
+                        showStatus('Other Party Information imported successfully', 'success');
+                    } else {
+                        throw new Error('Invalid file format');
+                    }
+                } catch (error) {
+                    console.error('Error importing Other Party Information:', error);
+                    showStatus('Failed to import Other Party Information. Please check the file format.', 'error');
+                }
+            };
+            
+            input.click();
+        }
+
+        function clearOtherInfo() {
+            if (confirm('Are you sure you want to clear all Other Party Information? This action cannot be undone.')) {
+                const fields = ['other-name', 'other-location', 'other-gender', 'other-age-range', 'other-relationship', 'other-context'];
+                
+                fields.forEach(fieldId => {
+                    document.getElementById(fieldId).value = '';
+                });
+
+                showStatus('Other Party Information cleared successfully', 'success');
+            }
+        }
+
+        // Load example data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load example My Information
+            document.getElementById('my-name').value = 'John Smith';
+            document.getElementById('my-age').value = '32';
+            document.getElementById('my-location').value = 'San Francisco, CA';
+            document.getElementById('my-gender').value = 'male';
+            document.getElementById('my-occupation').value = 'Software Engineer';
+            document.getElementById('my-profile').value = 'I\'m a passionate software engineer with 8 years of experience in web development.';
+            document.getElementById('my-experience').value = '8 years of experience in full-stack web development.';
+            document.getElementById('my-communication-style').value = 'professional';
+
+            // Load example Other Party Information
+            document.getElementById('other-name').value = 'Sarah Johnson';
+            document.getElementById('other-location').value = 'New York, NY';
+            document.getElementById('other-gender').value = 'female';
+            document.getElementById('other-age-range').value = '26-35';
+            document.getElementById('other-relationship').value = 'colleague';
+            document.getElementById('other-context').value = 'We\'re working together on a new project.';
+
+            showStatus('Example data loaded. Test the import/export functionality!', 'success');
+        });
+    </script>
+</body>
+</html>

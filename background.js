@@ -315,15 +315,14 @@ class MeetCounselorBackground {
   }
 
   async getOpenAIApiKey() {
-    // First try to get from extension settings
+    // Get from extension settings
     const settings = await this.getSettings();
     if (settings.apiKeys && settings.apiKeys.openai) {
       return settings.apiKeys.openai;
     }
-    
-    // Fallback to environment variable (for development)
-    // Note: In production, this should be configured through the extension settings
-    return process.env.OPENAI_API_KEY || null;
+
+    // No fallback - user must configure API key in settings
+    return null;
   }
 
   async saveSettings(settings) {
