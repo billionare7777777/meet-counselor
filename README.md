@@ -86,9 +86,16 @@ An AI-powered Chrome extension that enhances Google Meet conversations with real
 4. **Data is automatically loaded** and saved to localStorage
 
 #### Complete Settings Backup
-1. **Go to Settings** → Conversation History tab
+1. **Go to Settings** → Additional Settings tab
 2. **Click "Export All Settings"** to download complete configuration
-3. **File includes**: Personal info, preferences, API keys, conversation history, and localStorage data
+3. **File includes ALL sections**:
+   - **My Information**: Personal details, occupation, experience, communication style
+   - **Other Party's Information**: Contact details, relationship, context
+   - **Additional Settings**: Auto-translate, response preferences, conversation context
+   - **API Keys**: OpenAI API key configuration
+   - **Prompt Settings**: Custom prompts, response examples, conversation goals, topics to avoid
+   - **Conversation History**: All saved conversations and chat history
+   - **LocalStorage Data**: All form field values and user preferences
 4. **Use "Import All Settings"** to restore complete configuration from backup
 5. **Use "Reset All Settings"** to clear everything and start fresh
 

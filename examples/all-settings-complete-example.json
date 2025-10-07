@@ -1,0 +1,108 @@
+{
+  "type": "All Settings",
+  "version": "1.0.0",
+  "exportDate": "2024-01-15T10:30:00.000Z",
+  "description": "Complete settings export including all sections",
+  
+  "myInfo": {
+    "name": "John Smith",
+    "age": "35",
+    "location": "New York, USA",
+    "gender": "Male",
+    "occupation": "Software Engineer",
+    "profile": "Experienced developer with expertise in web technologies",
+    "experience": "10+ years in software development",
+    "communicationStyle": "Professional and friendly"
+  },
+  
+  "otherInfo": {
+    "name": "Maria Garcia",
+    "location": "Madrid, Spain",
+    "gender": "Female",
+    "ageRange": "25-35",
+    "relationship": "Business Partner",
+    "context": "International project collaboration"
+  },
+  
+  "additional": {
+    "autoTranslate": true,
+    "saveHistory": true,
+    "autoGenerateResponses": false,
+    "targetLanguage": "es",
+    "responseStyle": "professional",
+    "responseLength": "medium",
+    "conversationContext": "business"
+  },
+  
+  "apiKeys": {
+    "openai": "sk-1234567890abcdef1234567890abcdef1234567890abcdef"
+  },
+  
+  "prompt": {
+    "customPrompt": "You are a professional business communication assistant. Help facilitate clear and effective communication between international business partners.",
+    "responseExamples": "Thank you for your input.\nI understand your perspective.\nLet me clarify that point.\nWhat are your thoughts on this?",
+    "conversationGoals": "Facilitate clear communication, build rapport, ensure mutual understanding, and maintain professional relationships.",
+    "avoidTopics": "Personal politics, controversial topics, sensitive personal information, religious discussions"
+  },
+  
+  "conversationHistory": [
+    {
+      "id": "conv_001",
+      "timestamp": "2024-01-15T09:00:00.000Z",
+      "type": "answer",
+      "question": "What are the main features of our new product?",
+      "response": "Our new product includes advanced analytics, real-time collaboration, and seamless integration with existing systems.",
+      "context": "Product presentation meeting"
+    },
+    {
+      "id": "conv_002", 
+      "timestamp": "2024-01-15T09:15:00.000Z",
+      "type": "chat",
+      "question": "How was your weekend?",
+      "response": "It was great! I spent time with family and did some hiking. How about you?",
+      "context": "Casual conversation"
+    }
+  ],
+  
+  "localStorage": {
+    "meet-counselor-my-name": "John Smith",
+    "meet-counselor-my-age": "35",
+    "meet-counselor-my-location": "New York, USA",
+    "meet-counselor-my-gender": "Male",
+    "meet-counselor-my-occupation": "Software Engineer",
+    "meet-counselor-my-profile": "Experienced developer with expertise in web technologies",
+    "meet-counselor-my-experience": "10+ years in software development",
+    "meet-counselor-my-communication-style": "Professional and friendly",
+    "meet-counselor-other-name": "Maria Garcia",
+    "meet-counselor-other-location": "Madrid, Spain",
+    "meet-counselor-other-gender": "Female",
+    "meet-counselor-other-age-range": "25-35",
+    "meet-counselor-other-relationship": "Business Partner",
+    "meet-counselor-other-context": "International project collaboration",
+    "meet-counselor-auto-translate": "true",
+    "meet-counselor-save-history": "true",
+    "meet-counselor-auto-generate-responses": "false",
+    "meet-counselor-target-language": "es",
+    "meet-counselor-response-style": "professional",
+    "meet-counselor-response-length": "medium",
+    "meet-counselor-conversation-context": "business",
+    "meet-counselor-openai-api-key": "sk-1234567890abcdef1234567890abcdef1234567890abcdef",
+    "meet-counselor-custom-prompt": "You are a professional business communication assistant. Help facilitate clear and effective communication between international business partners.",
+    "meet-counselor-response-examples": "Thank you for your input.\nI understand your perspective.\nLet me clarify that point.\nWhat are your thoughts on this?",
+    "meet-counselor-conversation-goals": "Facilitate clear communication, build rapport, ensure mutual understanding, and maintain professional relationships.",
+    "meet-counselor-avoid-topics": "Personal politics, controversial topics, sensitive personal information, religious discussions"
+  },
+  
+  "sections": {
+    "included": [
+      "My Information",
+      "Other Party's Information", 
+      "Additional Settings",
+      "API Keys",
+      "Prompt Settings",
+      "Conversation History",
+      "LocalStorage Data"
+    ],
+    "description": "This export includes all settings sections as requested"
+  }
+}
