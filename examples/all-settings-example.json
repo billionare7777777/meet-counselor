@@ -1,0 +1,87 @@
+{
+  "myInfo": {
+    "name": "John Smith",
+    "age": "32",
+    "location": "San Francisco, CA",
+    "gender": "male",
+    "occupation": "Software Engineer",
+    "profile": "I'm a passionate software engineer with 8 years of experience in web development. I love working with modern technologies and building user-friendly applications. In my free time, I enjoy hiking, reading, and playing guitar.",
+    "experience": "8 years of experience in full-stack web development. Proficient in JavaScript, React, Node.js, Python, and cloud technologies. Led multiple successful projects and mentored junior developers.",
+    "communicationStyle": "professional"
+  },
+  "otherInfo": {
+    "name": "Sarah Johnson",
+    "location": "New York, NY",
+    "gender": "female",
+    "ageRange": "26-35",
+    "relationship": "colleague",
+    "context": "We're working together on a new project and need to coordinate our efforts. She's the project manager and I'm the lead developer."
+  },
+  "additional": {
+    "autoTranslate": true,
+    "saveHistory": true,
+    "autoGenerateResponses": false,
+    "targetLanguage": "en",
+    "responseStyle": "professional",
+    "responseLength": "medium",
+    "conversationContext": "business"
+  },
+  "apiKeys": {
+    "openai": "sk-your-openai-api-key-here"
+  },
+  "prompt": {
+    "customPrompt": "You are a helpful AI assistant for business meetings. Provide clear, professional responses that help facilitate productive conversations.",
+    "responseExamples": "Example responses:\n- 'That's an excellent point. Let me add to that...'\n- 'I understand your concern. Here's what I think...'\n- 'Thank you for sharing that perspective.'",
+    "conversationGoals": "Facilitate productive business discussions, ensure clear communication, and help resolve any misunderstandings.",
+    "avoidTopics": "Personal matters, controversial topics, and anything unrelated to the business discussion."
+  },
+  "conversationHistory": [
+    {
+      "id": "conv_001",
+      "timestamp": 1704067200000,
+      "messages": [
+        {
+          "text": "Good morning! How are you today?",
+          "speaker": "other",
+          "timestamp": 1704067200000
+        },
+        {
+          "text": "Good morning! I'm doing well, thank you. Ready to discuss the project updates.",
+          "speaker": "me",
+          "timestamp": 1704067260000
+        }
+      ]
+    }
+  ],
+  "localStorage": {
+    "meet-counselor-my-name": "\"John Smith\"",
+    "meet-counselor-my-age": "\"32\"",
+    "meet-counselor-my-location": "\"San Francisco, CA\"",
+    "meet-counselor-my-gender": "\"male\"",
+    "meet-counselor-my-occupation": "\"Software Engineer\"",
+    "meet-counselor-my-profile": "\"I'm a passionate software engineer...\"",
+    "meet-counselor-my-experience": "\"8 years of experience...\"",
+    "meet-counselor-my-communication-style": "\"professional\"",
+    "meet-counselor-other-name": "\"Sarah Johnson\"",
+    "meet-counselor-other-location": "\"New York, NY\"",
+    "meet-counselor-other-gender": "\"female\"",
+    "meet-counselor-other-age-range": "\"26-35\"",
+    "meet-counselor-other-relationship": "\"colleague\"",
+    "meet-counselor-other-context": "\"We're working together on a new project...\"",
+    "meet-counselor-autoTranslate": "true",
+    "meet-counselor-saveHistory": "true",
+    "meet-counselor-autoGenerateResponses": "false",
+    "meet-counselor-targetLanguage": "\"en\"",
+    "meet-counselor-responseStyle": "\"professional\"",
+    "meet-counselor-responseLength": "\"medium\"",
+    "meet-counselor-conversationContext": "\"business\"",
+    "meet-counselor-openaiApiKey": "\"sk-your-openai-api-key-here\"",
+    "meet-counselor-customPrompt": "\"You are a helpful AI assistant...\"",
+    "meet-counselor-responseExamples": "\"Example responses:\\n- 'That's an excellent point...\"",
+    "meet-counselor-conversationGoals": "\"Facilitate productive business discussions...\"",
+    "meet-counselor-avoidTopics": "\"Personal matters, controversial topics...\""
+  },
+  "exportDate": "2024-01-15T10:30:00.000Z",
+  "version": "1.0.0",
+  "type": "All Settings"
+}

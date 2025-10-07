@@ -85,6 +85,13 @@ An AI-powered Chrome extension that enhances Google Meet conversations with real
 3. **Choose the file** you previously exported
 4. **Data is automatically loaded** and saved to localStorage
 
+#### Complete Settings Backup
+1. **Go to Settings** → Conversation History tab
+2. **Click "Export All Settings"** to download complete configuration
+3. **File includes**: Personal info, preferences, API keys, conversation history, and localStorage data
+4. **Use "Import All Settings"** to restore complete configuration from backup
+5. **Use "Reset All Settings"** to clear everything and start fresh
+
 #### File Format
 - **JSON format**: Human-readable and editable
 - **Version control**: Includes version information for compatibility
@@ -153,8 +160,10 @@ Customize how the AI generates responses:
 - **My Information Import**: Import previously saved personal information
 - **Other Party Export**: Export information about conversation partners
 - **Other Party Import**: Import information about conversation partners
-- **Data Backup**: Create backups of your information for safekeeping
-- **Data Transfer**: Move information between different browsers or devices
+- **All Settings Export**: Export complete configuration including all settings, preferences, and data
+- **All Settings Import**: Import complete configuration from backup file
+- **Data Backup**: Create comprehensive backups of your entire setup
+- **Data Transfer**: Move complete configuration between different browsers or devices
 - **Format Validation**: Automatic validation of imported JSON files
 - **Version Control**: Export files include version information for compatibility
 

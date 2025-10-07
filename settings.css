@@ -233,6 +233,35 @@ body {
   border: 1px solid #dadce0;
 }
 
+/* Settings backup controls */
+.settings-backup-controls {
+  margin: 24px 0;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #dadce0;
+}
+
+.settings-backup-controls h3 {
+  margin: 0 0 8px 0;
+  color: #1a73e8;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.settings-backup-controls p {
+  margin: 0 0 16px 0;
+  color: #5f6368;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.backup-controls {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .history-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));

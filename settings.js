@@ -93,6 +93,19 @@ class SettingsController {
       this.clearOtherInfo();
     });
 
+    // All Settings controls
+    document.getElementById('export-all-settings').addEventListener('click', () => {
+      this.exportAllSettings();
+    });
+
+    document.getElementById('import-all-settings').addEventListener('click', () => {
+      this.importAllSettings();
+    });
+
+    document.getElementById('reset-all-settings').addEventListener('click', () => {
+      this.resetAllSettings();
+    });
+
     // Auto-save on input changes
     document.querySelectorAll('input, select, textarea').forEach(input => {
       input.addEventListener('change', () => {
@@ -766,6 +779,229 @@ class SettingsController {
         this.showError('Failed to clear Other Party Information');
       }
     }
+  }
+
+  // All Settings methods
+  async exportAllSettings() {
+    try {
+      // Collect all current settings
+      const allSettings = {
+        myInfo: {
+          name: this.getFieldValue('my-name'),
+          age: this.getFieldValue('my-age'),
+          location: this.getFieldValue('my-location'),
+          gender: this.getFieldValue('my-gender'),
+          occupation: this.getFieldValue('my-occupation'),
+          profile: this.getFieldValue('my-profile'),
+          experience: this.getFieldValue('my-experience'),
+          communicationStyle: this.getFieldValue('my-communication-style')
+        },
+        otherInfo: {
+          name: this.getFieldValue('other-name'),
+          location: this.getFieldValue('other-location'),
+          gender: this.getFieldValue('other-gender'),
+          ageRange: this.getFieldValue('other-age-range'),
+          relationship: this.getFieldValue('other-relationship'),
+          context: this.getFieldValue('other-context')
+        },
+        additional: {
+          autoTranslate: this.getFieldValue('autoTranslate'),
+          saveHistory: this.getFieldValue('saveHistory'),
+          autoGenerateResponses: this.getFieldValue('autoGenerateResponses'),
+          targetLanguage: this.getFieldValue('targetLanguage'),
+          responseStyle: this.getFieldValue('responseStyle'),
+          responseLength: this.getFieldValue('responseLength'),
+          conversationContext: this.getFieldValue('conversationContext')
+        },
+        apiKeys: {
+          openai: this.getFieldValue('openaiApiKey')
+        },
+        prompt: {
+          customPrompt: this.getFieldValue('customPrompt'),
+          responseExamples: this.getFieldValue('responseExamples'),
+          conversationGoals: this.getFieldValue('conversationGoals'),
+          avoidTopics: this.getFieldValue('avoidTopics')
+        },
+        conversationHistory: this.conversationHistory,
+        localStorage: this.getAllLocalStorageData(),
+        exportDate: new Date().toISOString(),
+        version: '1.0.0',
+        type: 'All Settings'
+      };
+
+      const blob = new Blob([JSON.stringify(allSettings, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `meet-counselor-all-settings-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      this.showSuccess('All settings exported successfully');
+    } catch (error) {
+      console.error('Error exporting all settings:', error);
+      this.showError('Failed to export all settings');
+    }
+  }
+
+  importAllSettings() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    
+    input.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      try {
+        const text = await file.text();
+        const data = JSON.parse(text);
+        
+        if (data.type === 'All Settings' && data.version) {
+          // Import My Information
+          if (data.myInfo) {
+            this.setFieldValue('my-name', data.myInfo.name || '');
+            this.setFieldValue('my-age', data.myInfo.age || '');
+            this.setFieldValue('my-location', data.myInfo.location || '');
+            this.setFieldValue('my-gender', data.myInfo.gender || '');
+            this.setFieldValue('my-occupation', data.myInfo.occupation || '');
+            this.setFieldValue('my-profile', data.myInfo.profile || '');
+            this.setFieldValue('my-experience', data.myInfo.experience || '');
+            this.setFieldValue('my-communication-style', data.myInfo.communicationStyle || '');
+          }
+
+          // Import Other Party's Information
+          if (data.otherInfo) {
+            this.setFieldValue('other-name', data.otherInfo.name || '');
+            this.setFieldValue('other-location', data.otherInfo.location || '');
+            this.setFieldValue('other-gender', data.otherInfo.gender || '');
+            this.setFieldValue('other-age-range', data.otherInfo.ageRange || '');
+            this.setFieldValue('other-relationship', data.otherInfo.relationship || '');
+            this.setFieldValue('other-context', data.otherInfo.context || '');
+          }
+
+          // Import Additional Settings
+          if (data.additional) {
+            this.setFieldValue('autoTranslate', data.additional.autoTranslate || false);
+            this.setFieldValue('saveHistory', data.additional.saveHistory !== false);
+            this.setFieldValue('autoGenerateResponses', data.additional.autoGenerateResponses || false);
+            this.setFieldValue('targetLanguage', data.additional.targetLanguage || 'en');
+            this.setFieldValue('responseStyle', data.additional.responseStyle || 'balanced');
+            this.setFieldValue('responseLength', data.additional.responseLength || 'medium');
+            this.setFieldValue('conversationContext', data.additional.conversationContext || 'general');
+          }
+
+          // Import API Keys
+          if (data.apiKeys) {
+            this.setFieldValue('openaiApiKey', data.apiKeys.openai || '');
+          }
+
+          // Import Prompt Settings
+          if (data.prompt) {
+            this.setFieldValue('customPrompt', data.prompt.customPrompt || '');
+            this.setFieldValue('responseExamples', data.prompt.responseExamples || '');
+            this.setFieldValue('conversationGoals', data.prompt.conversationGoals || '');
+            this.setFieldValue('avoidTopics', data.prompt.avoidTopics || '');
+          }
+
+          // Import Conversation History
+          if (data.conversationHistory && Array.isArray(data.conversationHistory)) {
+            await chrome.storage.local.set({ conversationHistory: data.conversationHistory });
+            this.conversationHistory = data.conversationHistory;
+          }
+
+          // Import localStorage data
+          if (data.localStorage) {
+            this.importLocalStorageData(data.localStorage);
+          }
+
+          // Save all form fields to localStorage
+          this.saveAllFieldsToLocalStorage();
+
+          // Update API key status
+          this.updateApiKeyStatus();
+
+          // Update history display
+          this.updateHistoryDisplay();
+
+          this.showSuccess('All settings imported successfully');
+        } else {
+          throw new Error('Invalid file format');
+        }
+      } catch (error) {
+        console.error('Error importing all settings:', error);
+        this.showError('Failed to import all settings. Please check the file format.');
+      }
+    };
+    
+    input.click();
+  }
+
+  resetAllSettings() {
+    if (confirm('Are you sure you want to reset ALL settings to their default values? This will clear all personal information, preferences, API keys, and conversation history. This action cannot be undone.')) {
+      try {
+        // Clear all Chrome storage
+        chrome.storage.local.clear();
+        
+        // Clear localStorage
+        this.clearAllLocalStorage();
+        
+        // Reset form
+        document.getElementById('settings-form').reset();
+        
+        // Reset conversation history
+        this.conversationHistory = [];
+        this.updateHistoryDisplay();
+        
+        // Update API key status
+        this.updateApiKeyStatus();
+        
+        this.showSuccess('All settings reset to defaults');
+      } catch (error) {
+        console.error('Error resetting all settings:', error);
+        this.showError('Failed to reset all settings');
+      }
+    }
+  }
+
+  getAllLocalStorageData() {
+    const localStorageData = {};
+    try {
+      const keys = Object.keys(localStorage);
+      keys.forEach(key => {
+        if (key.startsWith('meet-counselor-')) {
+          localStorageData[key] = localStorage.getItem(key);
+        }
+      });
+    } catch (error) {
+      console.warn('Failed to get localStorage data:', error);
+    }
+    return localStorageData;
+  }
+
+  importLocalStorageData(localStorageData) {
+    try {
+      Object.keys(localStorageData).forEach(key => {
+        if (key.startsWith('meet-counselor-')) {
+          localStorage.setItem(key, localStorageData[key]);
+        }
+      });
+    } catch (error) {
+      console.warn('Failed to import localStorage data:', error);
+    }
+  }
+
+  saveAllFieldsToLocalStorage() {
+    const form = document.getElementById('settings-form');
+    if (!form) return;
+
+    const fields = form.querySelectorAll('input, select, textarea');
+    fields.forEach(field => {
+      this.saveFieldToLocalStorage(field);
+    });
   }
 
   showSuccess(message) {
