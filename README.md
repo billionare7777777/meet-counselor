@@ -72,6 +72,25 @@ An AI-powered Chrome extension that enhances Google Meet conversations with real
 3. **Activate Extension**: Click the Meet Counselor button in the Meet interface
 4. **Configure Settings**: Use the extension popup to set up your personal information and preferences
 
+### Import/Export Usage
+
+#### Exporting Information
+1. **Go to Settings** → My Information or Other Party's Information
+2. **Click "Export"** button to download your data as JSON
+3. **Save the file** to your computer for backup or transfer
+
+#### Importing Information
+1. **Go to Settings** → My Information or Other Party's Information
+2. **Click "Import"** button to select a JSON file
+3. **Choose the file** you previously exported
+4. **Data is automatically loaded** and saved to localStorage
+
+#### File Format
+- **JSON format**: Human-readable and editable
+- **Version control**: Includes version information for compatibility
+- **Metadata**: Export date and type information included
+- **Validation**: Automatic format validation on import
+
 ### Key Features
 
 #### Real-time Transcription
@@ -128,6 +147,16 @@ Customize how the AI generates responses:
 - **Real-time Saving**: Changes are saved as you type
 - **Cross-tab Sync**: Settings are shared across extension tabs
 - **Data Management**: Clear form data or reset to defaults anytime
+
+### Import/Export Features
+- **My Information Export**: Export your personal details as JSON file
+- **My Information Import**: Import previously saved personal information
+- **Other Party Export**: Export information about conversation partners
+- **Other Party Import**: Import information about conversation partners
+- **Data Backup**: Create backups of your information for safekeeping
+- **Data Transfer**: Move information between different browsers or devices
+- **Format Validation**: Automatic validation of imported JSON files
+- **Version Control**: Export files include version information for compatibility
 
 ### Translation Settings
 - Target language selection

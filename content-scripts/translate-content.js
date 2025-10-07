@@ -236,6 +236,11 @@ class TranslateIntegration {
           <div class="settings-content">
             <div id="my-info" class="tab-content active">
               <h3>My Information</h3>
+              <div class="info-controls">
+                <button type="button" class="btn btn-secondary" id="export-my-info-modal">Export</button>
+                <button type="button" class="btn btn-secondary" id="import-my-info-modal">Import</button>
+                <button type="button" class="btn btn-danger" id="clear-my-info-modal">Clear</button>
+              </div>
               <div class="form-group">
                 <label>Name:</label>
                 <input type="text" id="my-name" placeholder="Enter your name">
@@ -269,6 +274,11 @@ class TranslateIntegration {
             
             <div id="other-info" class="tab-content">
               <h3>Other Party's Information</h3>
+              <div class="info-controls">
+                <button type="button" class="btn btn-secondary" id="export-other-info-modal">Export</button>
+                <button type="button" class="btn btn-secondary" id="import-other-info-modal">Import</button>
+                <button type="button" class="btn btn-danger" id="clear-other-info-modal">Clear</button>
+              </div>
               <div class="form-group">
                 <label>Name:</label>
                 <input type="text" id="other-name" placeholder="Enter other party's name">
@@ -382,6 +392,32 @@ class TranslateIntegration {
     modal.querySelector('#save-settings').addEventListener('click', () => {
       this.saveSettings(modal);
       modal.remove();
+    });
+
+    // My Information modal controls
+    modal.querySelector('#export-my-info-modal').addEventListener('click', () => {
+      this.exportMyInfoModal(modal);
+    });
+
+    modal.querySelector('#import-my-info-modal').addEventListener('click', () => {
+      this.importMyInfoModal(modal);
+    });
+
+    modal.querySelector('#clear-my-info-modal').addEventListener('click', () => {
+      this.clearMyInfoModal(modal);
+    });
+
+    // Other Party's Information modal controls
+    modal.querySelector('#export-other-info-modal').addEventListener('click', () => {
+      this.exportOtherInfoModal(modal);
+    });
+
+    modal.querySelector('#import-other-info-modal').addEventListener('click', () => {
+      this.importOtherInfoModal(modal);
+    });
+
+    modal.querySelector('#clear-other-info-modal').addEventListener('click', () => {
+      this.clearOtherInfoModal(modal);
     });
   }
 
@@ -686,6 +722,215 @@ class TranslateIntegration {
     const storedValue = this.loadFieldFromLocalStorage('conversation-input');
     if (storedValue !== null && storedValue.trim() !== '') {
       conversationInput.value = storedValue;
+    }
+  }
+
+  getFieldValue(fieldId) {
+    const field = document.getElementById(fieldId);
+    return field ? field.value : '';
+  }
+
+  setFieldValue(fieldId, value) {
+    const field = document.getElementById(fieldId);
+    if (field) {
+      field.value = value || '';
+    }
+  }
+
+  // Modal import/export methods
+  exportMyInfoModal(modal) {
+    try {
+      const myInfoData = {
+        name: modal.querySelector('#my-name').value,
+        location: modal.querySelector('#my-location').value,
+        age: modal.querySelector('#my-age').value,
+        gender: modal.querySelector('#my-gender').value,
+        profile: modal.querySelector('#my-profile').value,
+        experience: modal.querySelector('#my-experience').value
+      };
+
+      const data = {
+        type: 'My Information',
+        data: myInfoData,
+        exportDate: new Date().toISOString(),
+        version: '1.0.0'
+      };
+
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `meet-counselor-my-info-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      this.showSuccess('My Information exported successfully');
+    } catch (error) {
+      console.error('Error exporting My Information:', error);
+      this.showError('Failed to export My Information');
+    }
+  }
+
+  importMyInfoModal(modal) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    
+    input.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      try {
+        const text = await file.text();
+        const data = JSON.parse(text);
+        
+        if (data.type === 'My Information' && data.data) {
+          // Import the data
+          modal.querySelector('#my-name').value = data.data.name || '';
+          modal.querySelector('#my-location').value = data.data.location || '';
+          modal.querySelector('#my-age').value = data.data.age || '';
+          modal.querySelector('#my-gender').value = data.data.gender || '';
+          modal.querySelector('#my-profile').value = data.data.profile || '';
+          modal.querySelector('#my-experience').value = data.data.experience || '';
+
+          // Save to localStorage
+          const fields = ['my-name', 'my-location', 'my-age', 'my-gender', 'my-profile', 'my-experience'];
+          fields.forEach(fieldId => {
+            const field = modal.querySelector(`#${fieldId}`);
+            if (field) {
+              this.saveFieldToLocalStorage(field);
+            }
+          });
+
+          this.showSuccess('My Information imported successfully');
+        } else {
+          throw new Error('Invalid file format');
+        }
+      } catch (error) {
+        console.error('Error importing My Information:', error);
+        this.showError('Failed to import My Information. Please check the file format.');
+      }
+    };
+    
+    input.click();
+  }
+
+  clearMyInfoModal(modal) {
+    if (confirm('Are you sure you want to clear all My Information? This action cannot be undone.')) {
+      try {
+        const fields = ['my-name', 'my-location', 'my-age', 'my-gender', 'my-profile', 'my-experience'];
+        
+        fields.forEach(fieldId => {
+          const field = modal.querySelector(`#${fieldId}`);
+          if (field) {
+            field.value = '';
+            this.saveFieldToLocalStorage(field);
+          }
+        });
+
+        this.showSuccess('My Information cleared successfully');
+      } catch (error) {
+        console.error('Error clearing My Information:', error);
+        this.showError('Failed to clear My Information');
+      }
+    }
+  }
+
+  exportOtherInfoModal(modal) {
+    try {
+      const otherInfoData = {
+        name: modal.querySelector('#other-name').value,
+        location: modal.querySelector('#other-location').value,
+        gender: modal.querySelector('#other-gender').value
+      };
+
+      const data = {
+        type: 'Other Party Information',
+        data: otherInfoData,
+        exportDate: new Date().toISOString(),
+        version: '1.0.0'
+      };
+
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `meet-counselor-other-info-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      this.showSuccess('Other Party Information exported successfully');
+    } catch (error) {
+      console.error('Error exporting Other Party Information:', error);
+      this.showError('Failed to export Other Party Information');
+    }
+  }
+
+  importOtherInfoModal(modal) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    
+    input.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      try {
+        const text = await file.text();
+        const data = JSON.parse(text);
+        
+        if (data.type === 'Other Party Information' && data.data) {
+          // Import the data
+          modal.querySelector('#other-name').value = data.data.name || '';
+          modal.querySelector('#other-location').value = data.data.location || '';
+          modal.querySelector('#other-gender').value = data.data.gender || '';
+
+          // Save to localStorage
+          const fields = ['other-name', 'other-location', 'other-gender'];
+          fields.forEach(fieldId => {
+            const field = modal.querySelector(`#${fieldId}`);
+            if (field) {
+              this.saveFieldToLocalStorage(field);
+            }
+          });
+
+          this.showSuccess('Other Party Information imported successfully');
+        } else {
+          throw new Error('Invalid file format');
+        }
+      } catch (error) {
+        console.error('Error importing Other Party Information:', error);
+        this.showError('Failed to import Other Party Information. Please check the file format.');
+      }
+    };
+    
+    input.click();
+  }
+
+  clearOtherInfoModal(modal) {
+    if (confirm('Are you sure you want to clear all Other Party Information? This action cannot be undone.')) {
+      try {
+        const fields = ['other-name', 'other-location', 'other-gender'];
+        
+        fields.forEach(fieldId => {
+          const field = modal.querySelector(`#${fieldId}`);
+          if (field) {
+            field.value = '';
+            this.saveFieldToLocalStorage(field);
+          }
+        });
+
+        this.showSuccess('Other Party Information cleared successfully');
+      } catch (error) {
+        console.error('Error clearing Other Party Information:', error);
+        this.showError('Failed to clear Other Party Information');
+      }
     }
   }
 

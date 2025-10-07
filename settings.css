@@ -222,6 +222,17 @@ body {
   margin-bottom: 24px;
 }
 
+/* Info controls */
+.info-controls {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #dadce0;
+}
+
 .history-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));

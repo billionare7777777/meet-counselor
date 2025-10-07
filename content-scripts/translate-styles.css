@@ -426,6 +426,17 @@
   overflow-y: auto;
 }
 
+/* Info controls */
+.info-controls {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #dadce0;
+}
+
 .history-item {
   padding: 12px;
   border: 1px solid #eee;

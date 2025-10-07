@@ -67,6 +67,32 @@ class SettingsController {
       this.clearLocalStorage();
     });
 
+    // My Information controls
+    document.getElementById('export-my-info').addEventListener('click', () => {
+      this.exportMyInfo();
+    });
+
+    document.getElementById('import-my-info').addEventListener('click', () => {
+      this.importMyInfo();
+    });
+
+    document.getElementById('clear-my-info').addEventListener('click', () => {
+      this.clearMyInfo();
+    });
+
+    // Other Party's Information controls
+    document.getElementById('export-other-info').addEventListener('click', () => {
+      this.exportOtherInfo();
+    });
+
+    document.getElementById('import-other-info').addEventListener('click', () => {
+      this.importOtherInfo();
+    });
+
+    document.getElementById('clear-other-info').addEventListener('click', () => {
+      this.clearOtherInfo();
+    });
+
     // Auto-save on input changes
     document.querySelectorAll('input, select, textarea').forEach(input => {
       input.addEventListener('change', () => {
@@ -138,27 +164,32 @@ class SettingsController {
     const formData = new FormData(form);
     
     // My Information - prioritize localStorage over settings
-    this.setFieldValue('myName', this.getFieldValueFromStorage('myName') || this.settings.myInfo?.name || '');
-    this.setFieldValue('myAge', this.getFieldValueFromStorage('myAge') || this.settings.myInfo?.age || '');
-    this.setFieldValue('myLocation', this.getFieldValueFromStorage('myLocation') || this.settings.myInfo?.location || '');
-    this.setFieldValue('myGender', this.getFieldValueFromStorage('myGender') || this.settings.myInfo?.gender || '');
-    this.setFieldValue('myOccupation', this.getFieldValueFromStorage('myOccupation') || this.settings.myInfo?.occupation || '');
-    this.setFieldValue('myProfile', this.getFieldValueFromStorage('myProfile') || this.settings.myInfo?.profile || '');
-    this.setFieldValue('myExperience', this.getFieldValueFromStorage('myExperience') || this.settings.myInfo?.experience || '');
-    this.setFieldValue('myCommunicationStyle', this.getFieldValueFromStorage('myCommunicationStyle') || this.settings.myInfo?.communicationStyle || '');
+    this.setFieldValue('my-name', this.getFieldValueFromStorage('my-name') || this.settings.myInfo?.name || '');
+    this.setFieldValue('my-age', this.getFieldValueFromStorage('my-age') || this.settings.myInfo?.age || '');
+    this.setFieldValue('my-location', this.getFieldValueFromStorage('my-location') || this.settings.myInfo?.location || '');
+    this.setFieldValue('my-gender', this.getFieldValueFromStorage('my-gender') || this.settings.myInfo?.gender || '');
+    this.setFieldValue('my-occupation', this.getFieldValueFromStorage('my-occupation') || this.settings.myInfo?.occupation || '');
+    this.setFieldValue('my-profile', this.getFieldValueFromStorage('my-profile') || this.settings.myInfo?.profile || '');
+    this.setFieldValue('my-experience', this.getFieldValueFromStorage('my-experience') || this.settings.myInfo?.experience || '');
+    this.setFieldValue('my-communication-style', this.getFieldValueFromStorage('my-communication-style') || this.settings.myInfo?.communicationStyle || '');
 
     // Other Party's Information - prioritize localStorage over settings
-    this.setFieldValue('otherName', this.getFieldValueFromStorage('otherName') || this.settings.otherInfo?.name || '');
-    this.setFieldValue('otherLocation', this.getFieldValueFromStorage('otherLocation') || this.settings.otherInfo?.location || '');
-    this.setFieldValue('otherGender', this.getFieldValueFromStorage('otherGender') || this.settings.otherInfo?.gender || '');
-    this.setFieldValue('otherAgeRange', this.getFieldValueFromStorage('otherAgeRange') || this.settings.otherInfo?.ageRange || '');
-    this.setFieldValue('otherRelationship', this.getFieldValueFromStorage('otherRelationship') || this.settings.otherInfo?.relationship || '');
-    this.setFieldValue('otherContext', this.getFieldValueFromStorage('otherContext') || this.settings.otherInfo?.context || '');
+    this.setFieldValue('other-name', this.getFieldValueFromStorage('other-name') || this.settings.otherInfo?.name || '');
+    this.setFieldValue('other-location', this.getFieldValueFromStorage('other-location') || this.settings.otherInfo?.location || '');
+    this.setFieldValue('other-gender', this.getFieldValueFromStorage('other-gender') || this.settings.otherInfo?.gender || '');
+    this.setFieldValue('other-age-range', this.getFieldValueFromStorage('other-age-range') || this.settings.otherInfo?.ageRange || '');
+    this.setFieldValue('other-relationship', this.getFieldValueFromStorage('other-relationship') || this.settings.otherInfo?.relationship || '');
+    this.setFieldValue('other-context', this.getFieldValueFromStorage('other-context') || this.settings.otherInfo?.context || '');
 
     // Additional Settings - prioritize localStorage over settings
-    this.setFieldValue('autoTranslate', this.getFieldValueFromStorage('autoTranslate') !== null ? this.getFieldValueFromStorage('autoTranslate') : (this.settings.additional?.autoTranslate || false));
-    this.setFieldValue('saveHistory', this.getFieldValueFromStorage('saveHistory') !== null ? this.getFieldValueFromStorage('saveHistory') : (this.settings.additional?.saveHistory !== false));
-    this.setFieldValue('autoGenerateResponses', this.getFieldValueFromStorage('autoGenerateResponses') !== null ? this.getFieldValueFromStorage('autoGenerateResponses') : (this.settings.additional?.autoGenerateResponses || false));
+    const autoTranslateValue = this.getFieldValueFromStorage('autoTranslate');
+    this.setFieldValue('autoTranslate', autoTranslateValue !== null ? autoTranslateValue : (this.settings.additional?.autoTranslate || false));
+    
+    const saveHistoryValue = this.getFieldValueFromStorage('saveHistory');
+    this.setFieldValue('saveHistory', saveHistoryValue !== null ? saveHistoryValue : (this.settings.additional?.saveHistory !== false));
+    
+    const autoGenerateResponsesValue = this.getFieldValueFromStorage('autoGenerateResponses');
+    this.setFieldValue('autoGenerateResponses', autoGenerateResponsesValue !== null ? autoGenerateResponsesValue : (this.settings.additional?.autoGenerateResponses || false));
     this.setFieldValue('targetLanguage', this.getFieldValueFromStorage('targetLanguage') || this.settings.additional?.targetLanguage || 'en');
     this.setFieldValue('responseStyle', this.getFieldValueFromStorage('responseStyle') || this.settings.additional?.responseStyle || 'balanced');
     this.setFieldValue('responseLength', this.getFieldValueFromStorage('responseLength') || this.settings.additional?.responseLength || 'medium');
@@ -200,24 +231,24 @@ class SettingsController {
     try {
       // Collect form data
       const settings = {
-        myInfo: {
-          name: this.getFieldValue('myName'),
-          age: this.getFieldValue('myAge'),
-          location: this.getFieldValue('myLocation'),
-          gender: this.getFieldValue('myGender'),
-          occupation: this.getFieldValue('myOccupation'),
-          profile: this.getFieldValue('myProfile'),
-          experience: this.getFieldValue('myExperience'),
-          communicationStyle: this.getFieldValue('myCommunicationStyle')
-        },
-        otherInfo: {
-          name: this.getFieldValue('otherName'),
-          location: this.getFieldValue('otherLocation'),
-          gender: this.getFieldValue('otherGender'),
-          ageRange: this.getFieldValue('otherAgeRange'),
-          relationship: this.getFieldValue('otherRelationship'),
-          context: this.getFieldValue('otherContext')
-        },
+      myInfo: {
+        name: this.getFieldValue('my-name'),
+        age: this.getFieldValue('my-age'),
+        location: this.getFieldValue('my-location'),
+        gender: this.getFieldValue('my-gender'),
+        occupation: this.getFieldValue('my-occupation'),
+        profile: this.getFieldValue('my-profile'),
+        experience: this.getFieldValue('my-experience'),
+        communicationStyle: this.getFieldValue('my-communication-style')
+      },
+      otherInfo: {
+        name: this.getFieldValue('other-name'),
+        location: this.getFieldValue('other-location'),
+        gender: this.getFieldValue('other-gender'),
+        ageRange: this.getFieldValue('other-age-range'),
+        relationship: this.getFieldValue('other-relationship'),
+        context: this.getFieldValue('other-context')
+      },
         additional: {
           autoTranslate: this.getFieldValue('autoTranslate'),
           saveHistory: this.getFieldValue('saveHistory'),
@@ -525,6 +556,214 @@ class SettingsController {
       } catch (error) {
         console.error('Error clearing localStorage:', error);
         this.showError('Failed to clear form data');
+      }
+    }
+  }
+
+  // My Information methods
+  exportMyInfo() {
+    try {
+      const myInfoData = {
+        name: this.getFieldValue('my-name'),
+        age: this.getFieldValue('my-age'),
+        location: this.getFieldValue('my-location'),
+        gender: this.getFieldValue('my-gender'),
+        occupation: this.getFieldValue('my-occupation'),
+        profile: this.getFieldValue('my-profile'),
+        experience: this.getFieldValue('my-experience'),
+        communicationStyle: this.getFieldValue('my-communication-style')
+      };
+
+      const data = {
+        type: 'My Information',
+        data: myInfoData,
+        exportDate: new Date().toISOString(),
+        version: '1.0.0'
+      };
+
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `meet-counselor-my-info-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      this.showSuccess('My Information exported successfully');
+    } catch (error) {
+      console.error('Error exporting My Information:', error);
+      this.showError('Failed to export My Information');
+    }
+  }
+
+  importMyInfo() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    
+    input.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      try {
+        const text = await file.text();
+        const data = JSON.parse(text);
+        
+        if (data.type === 'My Information' && data.data) {
+          // Import the data
+          this.setFieldValue('my-name', data.data.name || '');
+          this.setFieldValue('my-age', data.data.age || '');
+          this.setFieldValue('my-location', data.data.location || '');
+          this.setFieldValue('my-gender', data.data.gender || '');
+          this.setFieldValue('my-occupation', data.data.occupation || '');
+          this.setFieldValue('my-profile', data.data.profile || '');
+          this.setFieldValue('my-experience', data.data.experience || '');
+          this.setFieldValue('my-communication-style', data.data.communicationStyle || '');
+
+          // Save to localStorage
+          const fields = ['my-name', 'my-age', 'my-location', 'my-gender', 'my-occupation', 'my-profile', 'my-experience', 'my-communication-style'];
+          fields.forEach(fieldName => {
+            const field = document.getElementById(fieldName);
+            if (field) {
+              this.saveFieldToLocalStorage(field);
+            }
+          });
+
+          this.showSuccess('My Information imported successfully');
+        } else {
+          throw new Error('Invalid file format');
+        }
+      } catch (error) {
+        console.error('Error importing My Information:', error);
+        this.showError('Failed to import My Information. Please check the file format.');
+      }
+    };
+    
+    input.click();
+  }
+
+  clearMyInfo() {
+    if (confirm('Are you sure you want to clear all My Information? This action cannot be undone.')) {
+      try {
+        const fields = ['my-name', 'my-age', 'my-location', 'my-gender', 'my-occupation', 'my-profile', 'my-experience', 'my-communication-style'];
+        
+        fields.forEach(fieldName => {
+          const field = document.getElementById(fieldName);
+          if (field) {
+            field.value = '';
+            this.saveFieldToLocalStorage(field);
+          }
+        });
+
+        this.showSuccess('My Information cleared successfully');
+      } catch (error) {
+        console.error('Error clearing My Information:', error);
+        this.showError('Failed to clear My Information');
+      }
+    }
+  }
+
+  // Other Party's Information methods
+  exportOtherInfo() {
+    try {
+      const otherInfoData = {
+        name: this.getFieldValue('other-name'),
+        location: this.getFieldValue('other-location'),
+        gender: this.getFieldValue('other-gender'),
+        ageRange: this.getFieldValue('other-age-range'),
+        relationship: this.getFieldValue('other-relationship'),
+        context: this.getFieldValue('other-context')
+      };
+
+      const data = {
+        type: 'Other Party Information',
+        data: otherInfoData,
+        exportDate: new Date().toISOString(),
+        version: '1.0.0'
+      };
+
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `meet-counselor-other-info-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      this.showSuccess('Other Party Information exported successfully');
+    } catch (error) {
+      console.error('Error exporting Other Party Information:', error);
+      this.showError('Failed to export Other Party Information');
+    }
+  }
+
+  importOtherInfo() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    
+    input.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      try {
+        const text = await file.text();
+        const data = JSON.parse(text);
+        
+        if (data.type === 'Other Party Information' && data.data) {
+          // Import the data
+          this.setFieldValue('other-name', data.data.name || '');
+          this.setFieldValue('other-location', data.data.location || '');
+          this.setFieldValue('other-gender', data.data.gender || '');
+          this.setFieldValue('other-age-range', data.data.ageRange || '');
+          this.setFieldValue('other-relationship', data.data.relationship || '');
+          this.setFieldValue('other-context', data.data.context || '');
+
+          // Save to localStorage
+          const fields = ['other-name', 'other-location', 'other-gender', 'other-age-range', 'other-relationship', 'other-context'];
+          fields.forEach(fieldName => {
+            const field = document.getElementById(fieldName);
+            if (field) {
+              this.saveFieldToLocalStorage(field);
+            }
+          });
+
+          this.showSuccess('Other Party Information imported successfully');
+        } else {
+          throw new Error('Invalid file format');
+        }
+      } catch (error) {
+        console.error('Error importing Other Party Information:', error);
+        this.showError('Failed to import Other Party Information. Please check the file format.');
+      }
+    };
+    
+    input.click();
+  }
+
+  clearOtherInfo() {
+    if (confirm('Are you sure you want to clear all Other Party Information? This action cannot be undone.')) {
+      try {
+        const fields = ['other-name', 'other-location', 'other-gender', 'other-age-range', 'other-relationship', 'other-context'];
+        
+        fields.forEach(fieldName => {
+          const field = document.getElementById(fieldName);
+          if (field) {
+            field.value = '';
+            this.saveFieldToLocalStorage(field);
+          }
+        });
+
+        this.showSuccess('Other Party Information cleared successfully');
+      } catch (error) {
+        console.error('Error clearing Other Party Information:', error);
+        this.showError('Failed to clear Other Party Information');
       }
     }
   }

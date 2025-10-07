@@ -1,0 +1,15 @@
+{
+  "type": "My Information",
+  "data": {
+    "name": "John Smith",
+    "age": "32",
+    "location": "San Francisco, CA",
+    "gender": "male",
+    "occupation": "Software Engineer",
+    "profile": "I'm a passionate software engineer with 8 years of experience in web development. I love working with modern technologies and building user-friendly applications. In my free time, I enjoy hiking, reading, and playing guitar.",
+    "experience": "8 years of experience in full-stack web development. Proficient in JavaScript, React, Node.js, Python, and cloud technologies. Led multiple successful projects and mentored junior developers.",
+    "communicationStyle": "professional"
+  },
+  "exportDate": "2024-01-15T10:30:00.000Z",
+  "version": "1.0.0"
+}

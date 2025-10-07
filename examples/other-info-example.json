@@ -1,0 +1,13 @@
+{
+  "type": "Other Party Information",
+  "data": {
+    "name": "Sarah Johnson",
+    "location": "New York, NY",
+    "gender": "female",
+    "ageRange": "25-35",
+    "relationship": "colleague",
+    "context": "We're working together on a new project and need to coordinate our efforts. She's the project manager and I'm the lead developer."
+  },
+  "exportDate": "2024-01-15T10:30:00.000Z",
+  "version": "1.0.0"
+}
