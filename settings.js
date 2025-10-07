@@ -40,15 +40,6 @@ class SettingsController {
       this.saveSettings();
     });
 
-    // Save button
-    document.getElementById('save-settings').addEventListener('click', () => {
-      this.saveSettings();
-    });
-
-    // Reset button
-    document.getElementById('reset-settings').addEventListener('click', () => {
-      this.resetSettings();
-    });
 
     // History controls
     document.getElementById('clear-history').addEventListener('click', () => {
@@ -195,28 +186,28 @@ class SettingsController {
     this.setFieldValue('other-context', this.getFieldValueFromStorage('other-context') || this.settings.otherInfo?.context || '');
 
     // Additional Settings - prioritize localStorage over settings
-    const autoTranslateValue = this.getFieldValueFromStorage('autoTranslate');
-    this.setFieldValue('autoTranslate', autoTranslateValue !== null ? autoTranslateValue : (this.settings.additional?.autoTranslate || false));
+    const autoTranslateValue = this.getFieldValueFromStorage('auto-translate');
+    this.setFieldValue('auto-translate', autoTranslateValue !== null ? autoTranslateValue : (this.settings.additional?.autoTranslate || false));
     
-    const saveHistoryValue = this.getFieldValueFromStorage('saveHistory');
-    this.setFieldValue('saveHistory', saveHistoryValue !== null ? saveHistoryValue : (this.settings.additional?.saveHistory !== false));
+    const saveHistoryValue = this.getFieldValueFromStorage('save-history');
+    this.setFieldValue('save-history', saveHistoryValue !== null ? saveHistoryValue : (this.settings.additional?.saveHistory !== false));
     
-    const autoGenerateResponsesValue = this.getFieldValueFromStorage('autoGenerateResponses');
-    this.setFieldValue('autoGenerateResponses', autoGenerateResponsesValue !== null ? autoGenerateResponsesValue : (this.settings.additional?.autoGenerateResponses || false));
-    this.setFieldValue('targetLanguage', this.getFieldValueFromStorage('targetLanguage') || this.settings.additional?.targetLanguage || 'en');
-    this.setFieldValue('responseStyle', this.getFieldValueFromStorage('responseStyle') || this.settings.additional?.responseStyle || 'balanced');
-    this.setFieldValue('responseLength', this.getFieldValueFromStorage('responseLength') || this.settings.additional?.responseLength || 'medium');
-    this.setFieldValue('conversationContext', this.getFieldValueFromStorage('conversationContext') || this.settings.additional?.conversationContext || 'general');
+    const autoGenerateResponsesValue = this.getFieldValueFromStorage('auto-generate-responses');
+    this.setFieldValue('auto-generate-responses', autoGenerateResponsesValue !== null ? autoGenerateResponsesValue : (this.settings.additional?.autoGenerateResponses || false));
+    this.setFieldValue('target-language', this.getFieldValueFromStorage('target-language') || this.settings.additional?.targetLanguage || 'en');
+    this.setFieldValue('response-style', this.getFieldValueFromStorage('response-style') || this.settings.additional?.responseStyle || 'balanced');
+    this.setFieldValue('response-length', this.getFieldValueFromStorage('response-length') || this.settings.additional?.responseLength || 'medium');
+    this.setFieldValue('conversation-context', this.getFieldValueFromStorage('conversation-context') || this.settings.additional?.conversationContext || 'general');
 
     // API Keys - prioritize localStorage over settings
-    this.setFieldValue('openaiApiKey', this.getFieldValueFromStorage('openaiApiKey') || this.settings.apiKeys?.openai || '');
+    this.setFieldValue('openai-api-key', this.getFieldValueFromStorage('openai-api-key') || this.settings.apiKeys?.openai || '');
     this.updateApiKeyStatus();
 
     // Prompt Settings - prioritize localStorage over settings
-    this.setFieldValue('customPrompt', this.getFieldValueFromStorage('customPrompt') || this.settings.prompt?.customPrompt || '');
-    this.setFieldValue('responseExamples', this.getFieldValueFromStorage('responseExamples') || this.settings.prompt?.responseExamples || '');
-    this.setFieldValue('conversationGoals', this.getFieldValueFromStorage('conversationGoals') || this.settings.prompt?.conversationGoals || '');
-    this.setFieldValue('avoidTopics', this.getFieldValueFromStorage('avoidTopics') || this.settings.prompt?.avoidTopics || '');
+    this.setFieldValue('custom-prompt', this.getFieldValueFromStorage('custom-prompt') || this.settings.prompt?.customPrompt || '');
+    this.setFieldValue('response-examples', this.getFieldValueFromStorage('response-examples') || this.settings.prompt?.responseExamples || '');
+    this.setFieldValue('conversation-goals', this.getFieldValueFromStorage('conversation-goals') || this.settings.prompt?.conversationGoals || '');
+    this.setFieldValue('avoid-topics', this.getFieldValueFromStorage('avoid-topics') || this.settings.prompt?.avoidTopics || '');
   }
 
   setFieldValue(fieldName, value) {
@@ -263,22 +254,22 @@ class SettingsController {
         context: this.getFieldValue('other-context')
       },
         additional: {
-          autoTranslate: this.getFieldValue('autoTranslate'),
-          saveHistory: this.getFieldValue('saveHistory'),
-          autoGenerateResponses: this.getFieldValue('autoGenerateResponses'),
-          targetLanguage: this.getFieldValue('targetLanguage'),
-          responseStyle: this.getFieldValue('responseStyle'),
-          responseLength: this.getFieldValue('responseLength'),
-          conversationContext: this.getFieldValue('conversationContext')
+          autoTranslate: this.getFieldValue('auto-translate'),
+          saveHistory: this.getFieldValue('save-history'),
+          autoGenerateResponses: this.getFieldValue('auto-generate-responses'),
+          targetLanguage: this.getFieldValue('target-language'),
+          responseStyle: this.getFieldValue('response-style'),
+          responseLength: this.getFieldValue('response-length'),
+          conversationContext: this.getFieldValue('conversation-context')
         },
         apiKeys: {
-          openai: this.getFieldValue('openaiApiKey')
+          openai: this.getFieldValue('openai-api-key')
         },
         prompt: {
-          customPrompt: this.getFieldValue('customPrompt'),
-          responseExamples: this.getFieldValue('responseExamples'),
-          conversationGoals: this.getFieldValue('conversationGoals'),
-          avoidTopics: this.getFieldValue('avoidTopics')
+          customPrompt: this.getFieldValue('custom-prompt'),
+          responseExamples: this.getFieldValue('response-examples'),
+          conversationGoals: this.getFieldValue('conversation-goals'),
+          avoidTopics: this.getFieldValue('avoid-topics')
         },
         lastUpdated: Date.now()
       };
@@ -302,29 +293,6 @@ class SettingsController {
     }
   }
 
-  async resetSettings() {
-    if (confirm('Are you sure you want to reset all settings to their default values? This action cannot be undone.')) {
-      try {
-        // Clear all settings
-        await chrome.storage.local.remove(['userSettings']);
-        this.settings = {};
-        
-        // Clear localStorage
-        this.clearAllLocalStorage();
-        
-        // Reset form
-        document.getElementById('settings-form').reset();
-        
-        // Update API key status
-        this.updateApiKeyStatus();
-        
-        this.showSuccess('Settings reset to defaults');
-      } catch (error) {
-        console.error('Error resetting settings:', error);
-        this.showError('Failed to reset settings');
-      }
-    }
-  }
 
   async clearHistory() {
     if (confirm('Are you sure you want to clear all conversation history? This action cannot be undone.')) {
@@ -465,7 +433,7 @@ class SettingsController {
   }
 
   updateApiKeyStatus() {
-    const apiKey = this.getFieldValue('openaiApiKey');
+    const apiKey = this.getFieldValue('openai-api-key');
     const statusDot = document.getElementById('api-status-dot');
     const statusText = document.getElementById('api-status-text');
     
@@ -805,22 +773,22 @@ class SettingsController {
           context: this.getFieldValue('other-context')
         },
         additional: {
-          autoTranslate: this.getFieldValue('autoTranslate'),
-          saveHistory: this.getFieldValue('saveHistory'),
-          autoGenerateResponses: this.getFieldValue('autoGenerateResponses'),
-          targetLanguage: this.getFieldValue('targetLanguage'),
-          responseStyle: this.getFieldValue('responseStyle'),
-          responseLength: this.getFieldValue('responseLength'),
-          conversationContext: this.getFieldValue('conversationContext')
+          autoTranslate: this.getFieldValue('auto-translate'),
+          saveHistory: this.getFieldValue('save-history'),
+          autoGenerateResponses: this.getFieldValue('auto-generate-responses'),
+          targetLanguage: this.getFieldValue('target-language'),
+          responseStyle: this.getFieldValue('response-style'),
+          responseLength: this.getFieldValue('response-length'),
+          conversationContext: this.getFieldValue('conversation-context')
         },
         apiKeys: {
-          openai: this.getFieldValue('openaiApiKey')
+          openai: this.getFieldValue('openai-api-key')
         },
         prompt: {
-          customPrompt: this.getFieldValue('customPrompt'),
-          responseExamples: this.getFieldValue('responseExamples'),
-          conversationGoals: this.getFieldValue('conversationGoals'),
-          avoidTopics: this.getFieldValue('avoidTopics')
+          customPrompt: this.getFieldValue('custom-prompt'),
+          responseExamples: this.getFieldValue('response-examples'),
+          conversationGoals: this.getFieldValue('conversation-goals'),
+          avoidTopics: this.getFieldValue('avoid-topics')
         },
         conversationHistory: this.conversationHistory,
         localStorage: this.getAllLocalStorageData(),
@@ -885,26 +853,26 @@ class SettingsController {
 
           // Import Additional Settings
           if (data.additional) {
-            this.setFieldValue('autoTranslate', data.additional.autoTranslate || false);
-            this.setFieldValue('saveHistory', data.additional.saveHistory !== false);
-            this.setFieldValue('autoGenerateResponses', data.additional.autoGenerateResponses || false);
-            this.setFieldValue('targetLanguage', data.additional.targetLanguage || 'en');
-            this.setFieldValue('responseStyle', data.additional.responseStyle || 'balanced');
-            this.setFieldValue('responseLength', data.additional.responseLength || 'medium');
-            this.setFieldValue('conversationContext', data.additional.conversationContext || 'general');
+            this.setFieldValue('auto-translate', data.additional.autoTranslate || false);
+            this.setFieldValue('save-history', data.additional.saveHistory !== false);
+            this.setFieldValue('auto-generate-responses', data.additional.autoGenerateResponses || false);
+            this.setFieldValue('target-language', data.additional.targetLanguage || 'en');
+            this.setFieldValue('response-style', data.additional.responseStyle || 'balanced');
+            this.setFieldValue('response-length', data.additional.responseLength || 'medium');
+            this.setFieldValue('conversation-context', data.additional.conversationContext || 'general');
           }
 
           // Import API Keys
           if (data.apiKeys) {
-            this.setFieldValue('openaiApiKey', data.apiKeys.openai || '');
+            this.setFieldValue('openai-api-key', data.apiKeys.openai || '');
           }
 
           // Import Prompt Settings
           if (data.prompt) {
-            this.setFieldValue('customPrompt', data.prompt.customPrompt || '');
-            this.setFieldValue('responseExamples', data.prompt.responseExamples || '');
-            this.setFieldValue('conversationGoals', data.prompt.conversationGoals || '');
-            this.setFieldValue('avoidTopics', data.prompt.avoidTopics || '');
+            this.setFieldValue('custom-prompt', data.prompt.customPrompt || '');
+            this.setFieldValue('response-examples', data.prompt.responseExamples || '');
+            this.setFieldValue('conversation-goals', data.prompt.conversationGoals || '');
+            this.setFieldValue('avoid-topics', data.prompt.avoidTopics || '');
           }
 
           // Import Conversation History

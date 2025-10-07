@@ -181,8 +181,8 @@ class MeetCounselorBackground {
     } catch (error) {
       console.error('Error generating AI response:', error);
       
-      // Fallback to contextual responses
-      return this.getFallbackResponse(context);
+      // No fallback - throw error to user
+      throw new Error(`Failed to generate AI response: ${error.message}`);
     }
   }
 
@@ -258,56 +258,6 @@ class MeetCounselorBackground {
     }
   }
 
-  getFallbackResponse(context) {
-    const responses = {
-      answer: [
-        "That's an interesting point. Could you tell me more about that?",
-        "I understand what you're saying. What do you think about...",
-        "That makes sense. Have you considered...",
-        "I see. From my experience, I would suggest...",
-        "That's a great question. Let me think about that..."
-      ],
-      chat: [
-        "How has your day been going?",
-        "What do you like to do in your free time?",
-        "Have you seen any good movies or shows lately?",
-        "What's your favorite type of cuisine?",
-        "Do you have any hobbies you're passionate about?"
-      ],
-      questions: {
-        beginning: [
-          "How are you doing today?",
-          "What brings you to this meeting?",
-          "Have we met before?",
-          "What's your role in this project?",
-          "How long have you been working on this?"
-        ],
-        during: [
-          "What are your thoughts on this approach?",
-          "Have you encountered this situation before?",
-          "What would you recommend?",
-          "How do you usually handle this?",
-          "What's your experience with this?"
-        ],
-        ending: [
-          "Is there anything else you'd like to discuss?",
-          "What are the next steps?",
-          "When should we follow up?",
-          "Do you have any questions?",
-          "Is there anything I can help you with?"
-        ]
-      }
-    };
-
-    if (context.type === 'questions') {
-      const questionType = context.questionType || 'beginning';
-      const questionList = responses.questions[questionType] || responses.questions.beginning;
-      return questionList[Math.floor(Math.random() * questionList.length)];
-    }
-
-    const responseList = responses[context.type] || responses.answer;
-    return responseList[Math.floor(Math.random() * responseList.length)];
-  }
 
   async getSettings() {
     const result = await chrome.storage.local.get(['userSettings']);
