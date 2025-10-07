@@ -613,6 +613,9 @@ class SettingsController {
             }
           });
 
+          // Save settings to Chrome storage as well
+          await this.saveSettings();
+
           this.showSuccess('My Information imported successfully');
         } else {
           throw new Error('Invalid file format');
@@ -714,6 +717,9 @@ class SettingsController {
               this.saveFieldToLocalStorage(field);
             }
           });
+
+          // Save settings to Chrome storage as well
+          await this.saveSettings();
 
           this.showSuccess('Other Party Information imported successfully');
         } else {
@@ -888,6 +894,9 @@ class SettingsController {
 
           // Save all form fields to localStorage
           this.saveAllFieldsToLocalStorage();
+
+          // Save settings to Chrome storage as well
+          await this.saveSettings();
 
           // Update API key status
           this.updateApiKeyStatus();

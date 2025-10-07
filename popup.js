@@ -75,6 +75,9 @@ class PopupController {
         this.sessionStartTime = sessionResult.currentSession.startTime || null;
         this.messageCount = sessionResult.currentSession.messageCount || 0;
       }
+
+      // Load configuration values from localStorage (prioritized over Chrome storage)
+      this.loadConfigurationFromLocalStorage();
     } catch (error) {
       console.error('Error loading data:', error);
     }
@@ -350,6 +353,9 @@ class PopupController {
       this.isRecording ? 'Connected' : 'Not connected';
     document.getElementById('message-count').textContent = this.messageCount.toString();
 
+    // Update configuration display
+    this.updateConfigurationDisplay();
+
     // Update conversation list
     this.updateConversationList();
   }
@@ -386,6 +392,94 @@ class PopupController {
     chrome.tabs.create({
       url: chrome.runtime.getURL(`conversation.html?id=${conversation.id}`)
     });
+  }
+
+  loadConfigurationFromLocalStorage() {
+    // Load configuration values from localStorage, prioritizing over Chrome storage
+    this.configValues = {};
+    
+    const fields = [
+      'my-name', 'my-location', 'my-age', 'my-gender', 'my-occupation', 'my-profile', 'my-experience', 'my-communication-style',
+      'other-name', 'other-location', 'other-gender', 'other-age-range', 'other-relationship', 'other-context',
+      'auto-translate', 'save-history', 'auto-generate-responses', 'target-language', 'response-style', 'response-length', 'conversation-context',
+      'openai-api-key', 'custom-prompt', 'response-examples', 'conversation-goals', 'avoid-topics'
+    ];
+
+    fields.forEach(fieldName => {
+      const storedValue = this.getFieldValueFromLocalStorage(fieldName);
+      if (storedValue !== null) {
+        this.configValues[fieldName] = storedValue;
+      } else if (this.userSettings) {
+        // Fallback to Chrome storage if localStorage doesn't have the value
+        const fieldPath = this.getFieldPathFromSettings(fieldName);
+        if (fieldPath) {
+          this.configValues[fieldName] = this.getNestedValue(this.userSettings, fieldPath);
+        }
+      }
+    });
+  }
+
+  getFieldValueFromLocalStorage(fieldName) {
+    try {
+      const stored = localStorage.getItem(`meet-counselor-${fieldName}`);
+      return stored ? JSON.parse(stored) : null;
+    } catch (error) {
+      console.warn('Failed to load field from localStorage:', error);
+      return null;
+    }
+  }
+
+  getFieldPathFromSettings(fieldName) {
+    // Map field names to their paths in the settings object
+    const fieldMap = {
+      'my-name': 'myInfo.name',
+      'my-age': 'myInfo.age',
+      'my-location': 'myInfo.location',
+      'my-gender': 'myInfo.gender',
+      'my-occupation': 'myInfo.occupation',
+      'my-profile': 'myInfo.profile',
+      'my-experience': 'myInfo.experience',
+      'my-communication-style': 'myInfo.communicationStyle',
+      'other-name': 'otherInfo.name',
+      'other-location': 'otherInfo.location',
+      'other-gender': 'otherInfo.gender',
+      'other-age-range': 'otherInfo.ageRange',
+      'other-relationship': 'otherInfo.relationship',
+      'other-context': 'otherInfo.context',
+      'auto-translate': 'additional.autoTranslate',
+      'save-history': 'additional.saveHistory',
+      'auto-generate-responses': 'additional.autoGenerateResponses',
+      'target-language': 'additional.targetLanguage',
+      'response-style': 'additional.responseStyle',
+      'response-length': 'additional.responseLength',
+      'conversation-context': 'additional.conversationContext',
+      'openai-api-key': 'apiKeys.openai',
+      'custom-prompt': 'prompt.customPrompt',
+      'response-examples': 'prompt.responseExamples',
+      'conversation-goals': 'prompt.conversationGoals',
+      'avoid-topics': 'prompt.avoidTopics'
+    };
+    
+    return fieldMap[fieldName] || null;
+  }
+
+  getNestedValue(obj, path) {
+    return path.split('.').reduce((current, key) => {
+      return current && current[key] !== undefined ? current[key] : null;
+    }, obj);
+  }
+
+  updateConfigurationDisplay() {
+    // Update configuration display in the popup
+    const name = this.configValues['my-name'] || 'Not set';
+    const location = this.configValues['my-location'] || 'Not set';
+    const apiKey = this.configValues['openai-api-key'] || '';
+    const autoTranslate = this.configValues['auto-translate'] || false;
+
+    document.getElementById('config-name').textContent = name;
+    document.getElementById('config-location').textContent = location;
+    document.getElementById('config-api-key').textContent = apiKey ? 'Configured' : 'Not configured';
+    document.getElementById('config-auto-translate').textContent = autoTranslate ? 'Enabled' : 'Disabled';
   }
 
   startSessionTimer() {
