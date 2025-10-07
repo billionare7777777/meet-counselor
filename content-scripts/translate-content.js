@@ -725,18 +725,6 @@ class TranslateIntegration {
     }
   }
 
-  getFieldValue(fieldId) {
-    const field = document.getElementById(fieldId);
-    return field ? field.value : '';
-  }
-
-  setFieldValue(fieldId, value) {
-    const field = document.getElementById(fieldId);
-    if (field) {
-      field.value = value || '';
-    }
-  }
-
   // Modal import/export methods
   exportMyInfoModal(modal) {
     try {

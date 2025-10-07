@@ -164,32 +164,27 @@ class SettingsController {
     const formData = new FormData(form);
     
     // My Information - prioritize localStorage over settings
-    this.setFieldValue('my-name', this.getFieldValueFromStorage('my-name') || this.settings.myInfo?.name || '');
-    this.setFieldValue('my-age', this.getFieldValueFromStorage('my-age') || this.settings.myInfo?.age || '');
-    this.setFieldValue('my-location', this.getFieldValueFromStorage('my-location') || this.settings.myInfo?.location || '');
-    this.setFieldValue('my-gender', this.getFieldValueFromStorage('my-gender') || this.settings.myInfo?.gender || '');
-    this.setFieldValue('my-occupation', this.getFieldValueFromStorage('my-occupation') || this.settings.myInfo?.occupation || '');
-    this.setFieldValue('my-profile', this.getFieldValueFromStorage('my-profile') || this.settings.myInfo?.profile || '');
-    this.setFieldValue('my-experience', this.getFieldValueFromStorage('my-experience') || this.settings.myInfo?.experience || '');
-    this.setFieldValue('my-communication-style', this.getFieldValueFromStorage('my-communication-style') || this.settings.myInfo?.communicationStyle || '');
+    this.setFieldValue('myName', this.getFieldValueFromStorage('myName') || this.settings.myInfo?.name || '');
+    this.setFieldValue('myAge', this.getFieldValueFromStorage('myAge') || this.settings.myInfo?.age || '');
+    this.setFieldValue('myLocation', this.getFieldValueFromStorage('myLocation') || this.settings.myInfo?.location || '');
+    this.setFieldValue('myGender', this.getFieldValueFromStorage('myGender') || this.settings.myInfo?.gender || '');
+    this.setFieldValue('myOccupation', this.getFieldValueFromStorage('myOccupation') || this.settings.myInfo?.occupation || '');
+    this.setFieldValue('myProfile', this.getFieldValueFromStorage('myProfile') || this.settings.myInfo?.profile || '');
+    this.setFieldValue('myExperience', this.getFieldValueFromStorage('myExperience') || this.settings.myInfo?.experience || '');
+    this.setFieldValue('myCommunicationStyle', this.getFieldValueFromStorage('myCommunicationStyle') || this.settings.myInfo?.communicationStyle || '');
 
     // Other Party's Information - prioritize localStorage over settings
-    this.setFieldValue('other-name', this.getFieldValueFromStorage('other-name') || this.settings.otherInfo?.name || '');
-    this.setFieldValue('other-location', this.getFieldValueFromStorage('other-location') || this.settings.otherInfo?.location || '');
-    this.setFieldValue('other-gender', this.getFieldValueFromStorage('other-gender') || this.settings.otherInfo?.gender || '');
-    this.setFieldValue('other-age-range', this.getFieldValueFromStorage('other-age-range') || this.settings.otherInfo?.ageRange || '');
-    this.setFieldValue('other-relationship', this.getFieldValueFromStorage('other-relationship') || this.settings.otherInfo?.relationship || '');
-    this.setFieldValue('other-context', this.getFieldValueFromStorage('other-context') || this.settings.otherInfo?.context || '');
+    this.setFieldValue('otherName', this.getFieldValueFromStorage('otherName') || this.settings.otherInfo?.name || '');
+    this.setFieldValue('otherLocation', this.getFieldValueFromStorage('otherLocation') || this.settings.otherInfo?.location || '');
+    this.setFieldValue('otherGender', this.getFieldValueFromStorage('otherGender') || this.settings.otherInfo?.gender || '');
+    this.setFieldValue('otherAgeRange', this.getFieldValueFromStorage('otherAgeRange') || this.settings.otherInfo?.ageRange || '');
+    this.setFieldValue('otherRelationship', this.getFieldValueFromStorage('otherRelationship') || this.settings.otherInfo?.relationship || '');
+    this.setFieldValue('otherContext', this.getFieldValueFromStorage('otherContext') || this.settings.otherInfo?.context || '');
 
     // Additional Settings - prioritize localStorage over settings
-    const autoTranslateValue = this.getFieldValueFromStorage('autoTranslate');
-    this.setFieldValue('autoTranslate', autoTranslateValue !== null ? autoTranslateValue : (this.settings.additional?.autoTranslate || false));
-    
-    const saveHistoryValue = this.getFieldValueFromStorage('saveHistory');
-    this.setFieldValue('saveHistory', saveHistoryValue !== null ? saveHistoryValue : (this.settings.additional?.saveHistory !== false));
-    
-    const autoGenerateResponsesValue = this.getFieldValueFromStorage('autoGenerateResponses');
-    this.setFieldValue('autoGenerateResponses', autoGenerateResponsesValue !== null ? autoGenerateResponsesValue : (this.settings.additional?.autoGenerateResponses || false));
+    this.setFieldValue('autoTranslate', this.getFieldValueFromStorage('autoTranslate') !== null ? this.getFieldValueFromStorage('autoTranslate') : (this.settings.additional?.autoTranslate || false));
+    this.setFieldValue('saveHistory', this.getFieldValueFromStorage('saveHistory') !== null ? this.getFieldValueFromStorage('saveHistory') : (this.settings.additional?.saveHistory !== false));
+    this.setFieldValue('autoGenerateResponses', this.getFieldValueFromStorage('autoGenerateResponses') !== null ? this.getFieldValueFromStorage('autoGenerateResponses') : (this.settings.additional?.autoGenerateResponses || false));
     this.setFieldValue('targetLanguage', this.getFieldValueFromStorage('targetLanguage') || this.settings.additional?.targetLanguage || 'en');
     this.setFieldValue('responseStyle', this.getFieldValueFromStorage('responseStyle') || this.settings.additional?.responseStyle || 'balanced');
     this.setFieldValue('responseLength', this.getFieldValueFromStorage('responseLength') || this.settings.additional?.responseLength || 'medium');
@@ -231,24 +226,24 @@ class SettingsController {
     try {
       // Collect form data
       const settings = {
-      myInfo: {
-        name: this.getFieldValue('my-name'),
-        age: this.getFieldValue('my-age'),
-        location: this.getFieldValue('my-location'),
-        gender: this.getFieldValue('my-gender'),
-        occupation: this.getFieldValue('my-occupation'),
-        profile: this.getFieldValue('my-profile'),
-        experience: this.getFieldValue('my-experience'),
-        communicationStyle: this.getFieldValue('my-communication-style')
-      },
-      otherInfo: {
-        name: this.getFieldValue('other-name'),
-        location: this.getFieldValue('other-location'),
-        gender: this.getFieldValue('other-gender'),
-        ageRange: this.getFieldValue('other-age-range'),
-        relationship: this.getFieldValue('other-relationship'),
-        context: this.getFieldValue('other-context')
-      },
+        myInfo: {
+          name: this.getFieldValue('myName'),
+          age: this.getFieldValue('myAge'),
+          location: this.getFieldValue('myLocation'),
+          gender: this.getFieldValue('myGender'),
+          occupation: this.getFieldValue('myOccupation'),
+          profile: this.getFieldValue('myProfile'),
+          experience: this.getFieldValue('myExperience'),
+          communicationStyle: this.getFieldValue('myCommunicationStyle')
+        },
+        otherInfo: {
+          name: this.getFieldValue('otherName'),
+          location: this.getFieldValue('otherLocation'),
+          gender: this.getFieldValue('otherGender'),
+          ageRange: this.getFieldValue('otherAgeRange'),
+          relationship: this.getFieldValue('otherRelationship'),
+          context: this.getFieldValue('otherContext')
+        },
         additional: {
           autoTranslate: this.getFieldValue('autoTranslate'),
           saveHistory: this.getFieldValue('saveHistory'),
@@ -564,14 +559,14 @@ class SettingsController {
   exportMyInfo() {
     try {
       const myInfoData = {
-        name: this.getFieldValue('my-name'),
-        age: this.getFieldValue('my-age'),
-        location: this.getFieldValue('my-location'),
-        gender: this.getFieldValue('my-gender'),
-        occupation: this.getFieldValue('my-occupation'),
-        profile: this.getFieldValue('my-profile'),
-        experience: this.getFieldValue('my-experience'),
-        communicationStyle: this.getFieldValue('my-communication-style')
+        name: this.getFieldValue('myName'),
+        age: this.getFieldValue('myAge'),
+        location: this.getFieldValue('myLocation'),
+        gender: this.getFieldValue('myGender'),
+        occupation: this.getFieldValue('myOccupation'),
+        profile: this.getFieldValue('myProfile'),
+        experience: this.getFieldValue('myExperience'),
+        communicationStyle: this.getFieldValue('myCommunicationStyle')
       };
 
       const data = {
@@ -614,17 +609,17 @@ class SettingsController {
         
         if (data.type === 'My Information' && data.data) {
           // Import the data
-          this.setFieldValue('my-name', data.data.name || '');
-          this.setFieldValue('my-age', data.data.age || '');
-          this.setFieldValue('my-location', data.data.location || '');
-          this.setFieldValue('my-gender', data.data.gender || '');
-          this.setFieldValue('my-occupation', data.data.occupation || '');
-          this.setFieldValue('my-profile', data.data.profile || '');
-          this.setFieldValue('my-experience', data.data.experience || '');
-          this.setFieldValue('my-communication-style', data.data.communicationStyle || '');
+          this.setFieldValue('myName', data.data.name || '');
+          this.setFieldValue('myAge', data.data.age || '');
+          this.setFieldValue('myLocation', data.data.location || '');
+          this.setFieldValue('myGender', data.data.gender || '');
+          this.setFieldValue('myOccupation', data.data.occupation || '');
+          this.setFieldValue('myProfile', data.data.profile || '');
+          this.setFieldValue('myExperience', data.data.experience || '');
+          this.setFieldValue('myCommunicationStyle', data.data.communicationStyle || '');
 
           // Save to localStorage
-          const fields = ['my-name', 'my-age', 'my-location', 'my-gender', 'my-occupation', 'my-profile', 'my-experience', 'my-communication-style'];
+          const fields = ['myName', 'myAge', 'myLocation', 'myGender', 'myOccupation', 'myProfile', 'myExperience', 'myCommunicationStyle'];
           fields.forEach(fieldName => {
             const field = document.getElementById(fieldName);
             if (field) {
@@ -648,7 +643,7 @@ class SettingsController {
   clearMyInfo() {
     if (confirm('Are you sure you want to clear all My Information? This action cannot be undone.')) {
       try {
-        const fields = ['my-name', 'my-age', 'my-location', 'my-gender', 'my-occupation', 'my-profile', 'my-experience', 'my-communication-style'];
+        const fields = ['myName', 'myAge', 'myLocation', 'myGender', 'myOccupation', 'myProfile', 'myExperience', 'myCommunicationStyle'];
         
         fields.forEach(fieldName => {
           const field = document.getElementById(fieldName);
@@ -670,12 +665,12 @@ class SettingsController {
   exportOtherInfo() {
     try {
       const otherInfoData = {
-        name: this.getFieldValue('other-name'),
-        location: this.getFieldValue('other-location'),
-        gender: this.getFieldValue('other-gender'),
-        ageRange: this.getFieldValue('other-age-range'),
-        relationship: this.getFieldValue('other-relationship'),
-        context: this.getFieldValue('other-context')
+        name: this.getFieldValue('otherName'),
+        location: this.getFieldValue('otherLocation'),
+        gender: this.getFieldValue('otherGender'),
+        ageRange: this.getFieldValue('otherAgeRange'),
+        relationship: this.getFieldValue('otherRelationship'),
+        context: this.getFieldValue('otherContext')
       };
 
       const data = {
@@ -718,15 +713,15 @@ class SettingsController {
         
         if (data.type === 'Other Party Information' && data.data) {
           // Import the data
-          this.setFieldValue('other-name', data.data.name || '');
-          this.setFieldValue('other-location', data.data.location || '');
-          this.setFieldValue('other-gender', data.data.gender || '');
-          this.setFieldValue('other-age-range', data.data.ageRange || '');
-          this.setFieldValue('other-relationship', data.data.relationship || '');
-          this.setFieldValue('other-context', data.data.context || '');
+          this.setFieldValue('otherName', data.data.name || '');
+          this.setFieldValue('otherLocation', data.data.location || '');
+          this.setFieldValue('otherGender', data.data.gender || '');
+          this.setFieldValue('otherAgeRange', data.data.ageRange || '');
+          this.setFieldValue('otherRelationship', data.data.relationship || '');
+          this.setFieldValue('otherContext', data.data.context || '');
 
           // Save to localStorage
-          const fields = ['other-name', 'other-location', 'other-gender', 'other-age-range', 'other-relationship', 'other-context'];
+          const fields = ['otherName', 'otherLocation', 'otherGender', 'otherAgeRange', 'otherRelationship', 'otherContext'];
           fields.forEach(fieldName => {
             const field = document.getElementById(fieldName);
             if (field) {
@@ -750,7 +745,7 @@ class SettingsController {
   clearOtherInfo() {
     if (confirm('Are you sure you want to clear all Other Party Information? This action cannot be undone.')) {
       try {
-        const fields = ['other-name', 'other-location', 'other-gender', 'other-age-range', 'other-relationship', 'other-context'];
+        const fields = ['otherName', 'otherLocation', 'otherGender', 'otherAgeRange', 'otherRelationship', 'otherContext'];
         
         fields.forEach(fieldName => {
           const field = document.getElementById(fieldName);

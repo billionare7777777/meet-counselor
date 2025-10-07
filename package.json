@@ -34,7 +34,10 @@
     "webpack": "^5.84.0",
     "webpack-cli": "^5.1.0"
   },
-  "dependencies": {},
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/your-username/meet-counselor.git"

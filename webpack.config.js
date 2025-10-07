@@ -5,9 +5,7 @@ module.exports = {
   entry: {
     background: './background.js',
     popup: './popup.js',
-    settings: './settings.js',
-    'meet-content': './content-scripts/meet-content.js',
-    'translate-content': './content-scripts/translate-content.js'
+    settings: './settings.js'
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
