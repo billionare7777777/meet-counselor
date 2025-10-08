@@ -942,6 +942,46 @@ class TranslateIntegration {
       case 'TEXT_RECEIVED':
         this.handleIncomingText(message.text);
         break;
+      case 'INSERT_TRANSLATE_CONTENT':
+        this.insertContentToTranslate(message.content);
+        break;
+    }
+  }
+
+  insertContentToTranslate(content) {
+    try {
+      // Find the Google Translate input textarea
+      const sourceTextarea = document.querySelector('[data-ved] textarea, [jsname="BJE2fc"], textarea[aria-label*="Source text"], textarea[aria-label*="텍스트 입력"]');
+      
+      if (sourceTextarea) {
+        // Clear existing content
+        sourceTextarea.value = '';
+        
+        // Set the new content
+        sourceTextarea.value = content;
+        
+        // Trigger input events to make Google Translate recognize the content
+        sourceTextarea.dispatchEvent(new Event('input', { bubbles: true }));
+        sourceTextarea.dispatchEvent(new Event('change', { bubbles: true }));
+        
+        // Focus the textarea to ensure it's active
+        sourceTextarea.focus();
+        
+        console.log('Content inserted into Google Translate:', content);
+      } else {
+        console.error('Could not find Google Translate textarea');
+        // Try alternative selectors
+        const alternativeTextarea = document.querySelector('textarea[placeholder*="텍스트"], textarea[placeholder*="Text"]');
+        if (alternativeTextarea) {
+          alternativeTextarea.value = content;
+          alternativeTextarea.dispatchEvent(new Event('input', { bubbles: true }));
+          alternativeTextarea.dispatchEvent(new Event('change', { bubbles: true }));
+          alternativeTextarea.focus();
+          console.log('Content inserted using alternative selector');
+        }
+      }
+    } catch (error) {
+      console.error('Error inserting content to Google Translate:', error);
     }
   }
 

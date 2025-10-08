@@ -177,6 +177,159 @@ body {
   gap: 8px;
 }
 
+.conversation-generator {
+  background: white;
+  border: 1px solid #dadce0;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.conversation-generator h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #3c4043;
+  margin-bottom: 16px;
+}
+
+.generator-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.control-group h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #5f6368;
+  margin-bottom: 8px;
+}
+
+.button-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.gen-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: #f8f9fa;
+  border: 1px solid #dadce0;
+  border-radius: 6px;
+  color: #5f6368;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 1;
+  min-width: 0;
+}
+
+.gen-btn:hover {
+  background: #e8f0fe;
+  border-color: #1a73e8;
+  color: #1a73e8;
+}
+
+.gen-btn svg {
+  flex-shrink: 0;
+}
+
+.conversation-display {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.display-panel {
+  background: #f8f9fa;
+  border: 1px solid #dadce0;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.panel-header {
+  background: white;
+  padding: 8px 12px;
+  border-bottom: 1px solid #dadce0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.panel-header h4 {
+  font-size: 12px;
+  font-weight: 600;
+  color: #3c4043;
+  margin: 0;
+}
+
+.panel-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.action-btn-small {
+  padding: 4px 8px;
+  background: #f8f9fa;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  color: #5f6368;
+  font-size: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-btn-small:hover {
+  background: #e8f0fe;
+  border-color: #1a73e8;
+  color: #1a73e8;
+}
+
+.panel-content {
+  padding: 12px;
+  min-height: 120px;
+  max-height: 200px;
+  overflow-y: auto;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #3c4043;
+}
+
+.placeholder-text {
+  color: #9aa0a6;
+  font-style: italic;
+  text-align: center;
+  padding: 20px;
+}
+
+.message-item {
+  margin-bottom: 12px;
+  padding: 12px;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #dadce0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+  line-height: 1.5;
+  color: #3c4043;
+}
+
+.message-item strong {
+  color: #1a73e8;
+  margin-right: 8px;
+}
+
+.message-item:last-child {
+  margin-bottom: 0;
+}
+
 .recent-conversations {
   background: white;
   border: 1px solid #dadce0;

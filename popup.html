@@ -52,52 +52,56 @@
         </div>
       </div>
 
-      <div class="user-config">
-        <h3>Configuration</h3>
-        <div class="config-info">
-          <div class="info-item">
-            <span class="label">Name:</span>
-            <span class="value" id="config-name">Not set</span>
+      <div class="conversation-generator">
+        <h3>Conversation Generator</h3>
+        <div class="generator-controls">
+          <div class="control-group">
+            <h4>Create Conversation</h4>
+            <div class="button-group">
+              <button class="gen-btn" id="create-answer">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+                <span>Create Answer</span>
+              </button>
+              <button class="gen-btn" id="create-chat">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+                </svg>
+                <span>Create Chat</span>
+              </button>
+            </div>
           </div>
-          <div class="info-item">
-            <span class="label">Location:</span>
-            <span class="value" id="config-location">Not set</span>
+          
+          <div class="control-group">
+            <h4>Create Questions</h4>
+            <div class="button-group">
+              <button class="gen-btn" id="create-beginning-questions">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 16h2v-2h-2v2zm0-4h2V6h-2v8z"/>
+                </svg>
+                <span>Start</span>
+              </button>
+              <button class="gen-btn" id="create-during-questions">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 16h2v-2h-2v2zm0-4h2V6h-2v8z"/>
+                </svg>
+                <span>During</span>
+              </button>
+              <button class="gen-btn" id="create-end-questions">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 16h2v-2h-2v2zm0-4h2V6h-2v8z"/>
+                </svg>
+                <span>End</span>
+              </button>
+            </div>
           </div>
-          <div class="info-item">
-            <span class="label">API Key:</span>
-            <span class="value" id="config-api-key">Not configured</span>
-          </div>
-          <div class="info-item">
-            <span class="label">Auto-translate:</span>
-            <span class="value" id="config-auto-translate">Disabled</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="recent-conversations">
-        <h3>Recent Conversations</h3>
-        <div class="conversation-list" id="conversation-list">
-          <div class="no-conversations">No recent conversations</div>
         </div>
       </div>
 
       <div class="quick-tools">
         <h3>Quick Tools</h3>
         <div class="tools-grid">
-          <button class="tool-btn" id="generate-response">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-            </svg>
-            <span>Generate Response</span>
-          </button>
-          
-          <button class="tool-btn" id="create-questions">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 16h2v-2h-2v2zm0-4h2V6h-2v8z"/>
-            </svg>
-            <span>Create Questions</span>
-          </button>
-          
           <button class="tool-btn" id="view-history">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
               <path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/>

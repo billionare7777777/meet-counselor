@@ -34,15 +34,45 @@ class PopupController {
       this.openSettings();
     });
 
+    // Conversation generation buttons
+    document.getElementById('create-answer').addEventListener('click', () => {
+      this.createAnswer();
+    });
+
+    document.getElementById('create-chat').addEventListener('click', () => {
+      this.createChat();
+    });
+
+    document.getElementById('create-beginning-questions').addEventListener('click', () => {
+      this.createQuestions('beginning');
+    });
+
+    document.getElementById('create-during-questions').addEventListener('click', () => {
+      this.createQuestions('during');
+    });
+
+    document.getElementById('create-end-questions').addEventListener('click', () => {
+      this.createQuestions('ending');
+    });
+
+    // Display panel actions
+    document.getElementById('copy-generated').addEventListener('click', () => {
+      this.copyGeneratedContent();
+    });
+
+    document.getElementById('use-generated').addEventListener('click', () => {
+      this.useGeneratedContent();
+    });
+
+    document.getElementById('copy-translation').addEventListener('click', () => {
+      this.copyTranslation();
+    });
+
+    document.getElementById('translate-content').addEventListener('click', () => {
+      this.translateContent();
+    });
+
     // Quick tools
-    document.getElementById('generate-response').addEventListener('click', () => {
-      this.generateResponse();
-    });
-
-    document.getElementById('create-questions').addEventListener('click', () => {
-      this.createQuestions();
-    });
-
     document.getElementById('view-history').addEventListener('click', () => {
       this.viewHistory();
     });
@@ -132,42 +162,63 @@ class PopupController {
     }
   }
 
-  async generateResponse() {
+  async createAnswer() {
     try {
-      // Get current conversation context
       const response = await chrome.runtime.sendMessage({
-        type: 'GENERATE_RESPONSE',
+        type: 'GENERATE_CONVERSATION',
         context: {
-          type: 'response',
-          conversationHistory: this.conversationHistory.slice(-5) // Last 5 messages
+          type: 'answer',
+          conversationHistory: this.conversationHistory.slice(-5),
+          userSettings: this.configValues
         }
       });
 
-      if (response.response) {
-        this.showGeneratedContent('Generated Response', response.response);
+      if (response.conversation) {
+        await this.pasteToGoogleTranslate(response.conversation, 'Answer');
+        await this.archiveConversation(response.conversation, 'answer');
       }
     } catch (error) {
-      console.error('Error generating response:', error);
-      this.showError('Failed to generate response');
+      console.error('Error creating answer:', error);
+      this.showError('Failed to create answer');
     }
   }
 
-  async createQuestions() {
+  async createChat() {
     try {
-      const questionTypes = ['beginning', 'during', 'ending'];
-      const randomType = questionTypes[Math.floor(Math.random() * questionTypes.length)];
-      
       const response = await chrome.runtime.sendMessage({
-        type: 'GENERATE_RESPONSE',
+        type: 'GENERATE_CONVERSATION',
         context: {
-          type: 'questions',
-          questionType: randomType,
-          conversationHistory: this.conversationHistory.slice(-5)
+          type: 'chat',
+          conversationHistory: this.conversationHistory.slice(-5),
+          userSettings: this.configValues
         }
       });
 
-      if (response.response) {
-        this.showGeneratedContent(`${randomType.charAt(0).toUpperCase() + randomType.slice(1)} Questions`, response.response);
+      if (response.conversation) {
+        await this.pasteToGoogleTranslate(response.conversation, 'Chat');
+        await this.archiveConversation(response.conversation, 'chat');
+      }
+    } catch (error) {
+      console.error('Error creating chat:', error);
+      this.showError('Failed to create chat');
+    }
+  }
+
+  async createQuestions(questionType) {
+    try {
+      const response = await chrome.runtime.sendMessage({
+        type: 'GENERATE_CONVERSATION',
+        context: {
+          type: 'questions',
+          questionType: questionType,
+          conversationHistory: this.conversationHistory.slice(-5),
+          userSettings: this.configValues
+        }
+      });
+
+      if (response.conversation) {
+        await this.pasteToGoogleTranslate(response.conversation, `${questionType.charAt(0).toUpperCase() + questionType.slice(1)} Questions`);
+        await this.archiveConversation(response.conversation, 'questions');
       }
     } catch (error) {
       console.error('Error creating questions:', error);
@@ -480,6 +531,219 @@ class PopupController {
     document.getElementById('config-location').textContent = location;
     document.getElementById('config-api-key').textContent = apiKey ? 'Configured' : 'Not configured';
     document.getElementById('config-auto-translate').textContent = autoTranslate ? 'Enabled' : 'Disabled';
+  }
+
+  async pasteToGoogleTranslate(conversation, title) {
+    try {
+      // Extract text content from the conversation
+      let content;
+      if (Array.isArray(conversation)) {
+        // For questions, join them with line breaks
+        if (title.includes('Questions')) {
+          content = conversation.map(msg => {
+            const text = msg.content || msg.text || String(msg);
+            return text.trim();
+          }).join('\n');
+        } else {
+          // For conversations, format as dialogue
+          content = conversation.map(msg => {
+            const text = msg.content || msg.text || String(msg);
+            const sender = msg.sender === 'user' || msg.sender === 'me' ? 'You' : 'Assistant';
+            return `${sender}: ${text}`;
+          }).join('\n');
+        }
+      } else if (conversation && typeof conversation === 'object') {
+        content = conversation.content || conversation.text || JSON.stringify(conversation, null, 2);
+      } else {
+        content = String(conversation || 'No content generated');
+      }
+
+      // Find Google Translate tab
+      const tabs = await chrome.tabs.query({});
+      const translateTab = tabs.find(tab => tab.url && tab.url.includes('translate.google.com'));
+      
+      if (translateTab) {
+        // Send content to Google Translate tab
+        await chrome.tabs.sendMessage(translateTab.id, {
+          type: 'INSERT_TRANSLATE_CONTENT',
+          content: content.trim()
+        });
+        
+        // Switch to the Google Translate tab
+        await chrome.tabs.update(translateTab.id, { active: true });
+        
+        // Store current content for archiving
+        this.currentGeneratedContent = conversation;
+        
+        this.showSuccess(`Content pasted to Google Translate`);
+      } else {
+        // If Google Translate is not open, open it and then send content
+        const newTab = await chrome.tabs.create({
+          url: 'https://translate.google.com/'
+        });
+        
+        // Wait a moment for the tab to load, then send content
+        setTimeout(async () => {
+          try {
+            await chrome.tabs.sendMessage(newTab.id, {
+              type: 'INSERT_TRANSLATE_CONTENT',
+              content: content.trim()
+            });
+            this.showSuccess(`Google Translate opened and content pasted`);
+          } catch (error) {
+            console.error('Error sending content to new translate tab:', error);
+            this.showError('Failed to paste content to Google Translate');
+          }
+        }, 2000);
+        
+        // Store current content for archiving
+        this.currentGeneratedContent = conversation;
+      }
+    } catch (error) {
+      console.error('Error pasting to Google Translate:', error);
+      this.showError('Failed to paste content to Google Translate');
+    }
+  }
+
+  displayGeneratedConversation(conversation, title) {
+    const contentPanel = document.getElementById('generated-content');
+    
+    if (Array.isArray(conversation)) {
+      // Format as conversation messages - simple list format
+      contentPanel.innerHTML = conversation.map((message, index) => {
+        const content = message.content || message.text || String(message);
+        return `
+          <div class="message-item">
+            <strong>${message.sender === 'user' || message.sender === 'me' ? 'You' : 'Assistant'}:</strong> ${content}
+          </div>
+        `;
+      }).join('');
+    } else if (conversation && typeof conversation === 'object') {
+      // Handle object responses - extract content property
+      const content = conversation.content || conversation.text || JSON.stringify(conversation, null, 2);
+      contentPanel.innerHTML = `
+        <div class="message-item">
+          <strong>${title}:</strong> ${content}
+        </div>
+      `;
+    } else {
+      // Format as single content - direct text
+      contentPanel.innerHTML = `
+        <div class="message-item">
+          <strong>${title}:</strong> ${conversation || 'No content generated'}
+        </div>
+      `;
+    }
+
+    // Store current content for copying/translation
+    this.currentGeneratedContent = conversation;
+  }
+
+  async archiveConversation(conversation, type) {
+    try {
+      const archivedConversation = {
+        id: Date.now(),
+        type: type,
+        content: conversation,
+        timestamp: Date.now(),
+        userSettings: this.configValues
+      };
+
+      // Add to conversation history
+      this.conversationHistory.push(archivedConversation);
+
+      // Save to storage
+      await chrome.storage.local.set({
+        conversationHistory: this.conversationHistory
+      });
+
+      // Update conversation list display
+      this.updateConversationList();
+    } catch (error) {
+      console.error('Error archiving conversation:', error);
+    }
+  }
+
+  copyGeneratedContent() {
+    if (this.currentGeneratedContent) {
+      let content;
+      if (Array.isArray(this.currentGeneratedContent)) {
+        content = this.currentGeneratedContent.map(msg => {
+          const text = msg.content || msg.text || String(msg);
+          return `${msg.sender || 'Assistant'}: ${text}`;
+        }).join('\n');
+      } else if (typeof this.currentGeneratedContent === 'object') {
+        content = this.currentGeneratedContent.content || this.currentGeneratedContent.text || JSON.stringify(this.currentGeneratedContent, null, 2);
+      } else {
+        content = String(this.currentGeneratedContent);
+      }
+      
+      navigator.clipboard.writeText(content);
+      this.showSuccess('Content copied to clipboard');
+    }
+  }
+
+  useGeneratedContent() {
+    if (this.currentGeneratedContent) {
+      // Send content to active tab
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs[0]) {
+          chrome.tabs.sendMessage(tabs[0].id, {
+            type: 'INSERT_CONTENT',
+            content: this.currentGeneratedContent
+          });
+        }
+      });
+      this.showSuccess('Content sent to active tab');
+    }
+  }
+
+  copyTranslation() {
+    const translationPanel = document.getElementById('translation-content');
+    const content = translationPanel.textContent;
+    
+    if (content && !content.includes('Translation will appear here')) {
+      navigator.clipboard.writeText(content);
+      this.showSuccess('Translation copied to clipboard');
+    }
+  }
+
+  async translateContent() {
+    if (!this.currentGeneratedContent) {
+      this.showError('No content to translate');
+      return;
+    }
+
+    try {
+      let content;
+      if (Array.isArray(this.currentGeneratedContent)) {
+        content = this.currentGeneratedContent.map(msg => msg.content || msg.text || String(msg)).join('\n');
+      } else if (typeof this.currentGeneratedContent === 'object') {
+        content = this.currentGeneratedContent.content || this.currentGeneratedContent.text || JSON.stringify(this.currentGeneratedContent, null, 2);
+      } else {
+        content = String(this.currentGeneratedContent);
+      }
+
+      const targetLanguage = this.configValues['target-language'] || 'en';
+      
+      const response = await chrome.runtime.sendMessage({
+        type: 'TRANSLATE_CONTENT',
+        content: content,
+        targetLanguage: targetLanguage
+      });
+
+      if (response.translation) {
+        const translationPanel = document.getElementById('translation-content');
+        translationPanel.innerHTML = `
+          <div class="message-item">
+            <strong>Translation (${targetLanguage}):</strong> ${response.translation}
+          </div>
+        `;
+      }
+    } catch (error) {
+      console.error('Error translating content:', error);
+      this.showError('Failed to translate content');
+    }
   }
 
   startSessionTimer() {
