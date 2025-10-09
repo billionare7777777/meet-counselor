@@ -136,6 +136,9 @@ class PopupController {
           console.log('🔄 Conversation history updated:', mergedHistory.length, 'total conversations');
           this.conversationHistory = mergedHistory;
           
+          // Update message count for current session
+          this.updateMessageCount();
+          
           // Save updated history to storage
           await chrome.storage.local.set({
             conversationHistory: this.conversationHistory
@@ -174,6 +177,17 @@ class PopupController {
       .sort((a, b) => a.timestamp - b.timestamp);
   }
 
+  updateMessageCount() {
+    if (this.isRecording && this.sessionStartTime) {
+      // Count messages from current session
+      const currentSessionMessages = this.conversationHistory.filter(conv => 
+        conv.timestamp && conv.timestamp >= this.sessionStartTime
+      );
+      this.messageCount = currentSessionMessages.length;
+      console.log('📊 Updated message count for current session:', this.messageCount);
+    }
+  }
+
   async saveData() {
     try {
       await chrome.storage.local.set({
@@ -203,6 +217,7 @@ class PopupController {
         }
       } else {
         // Start recording
+        console.log('🔄 Starting recording...');
         const response = await chrome.runtime.sendMessage({ type: 'START_RECORDING' });
         console.log('Start recording response:', response);
         
@@ -211,6 +226,7 @@ class PopupController {
           this.isRecording = true;
           this.sessionStartTime = Date.now();
           this.messageCount = 0;
+          console.log('✅ Recording started successfully');
           this.showSuccess('Recording started successfully');
         } else {
           // Log the actual response for debugging
@@ -498,10 +514,19 @@ class PopupController {
     // Update session info
     document.getElementById('session-status').textContent = 
       this.isRecording ? 'Connected' : 'Not connected';
-    document.getElementById('message-count').textContent = this.messageCount.toString();
+    
+    // Update message count based on conversation history from current session
+    const currentSessionMessages = this.conversationHistory.filter(conv => 
+      conv.timestamp && this.sessionStartTime && conv.timestamp >= this.sessionStartTime
+    );
+    const displayMessageCount = this.isRecording ? currentSessionMessages.length : this.messageCount;
+    document.getElementById('message-count').textContent = displayMessageCount.toString();
 
     // Update configuration display
     this.updateConfigurationDisplay();
+
+    // Update message count
+    this.updateMessageCount();
 
     // Sync conversation history to get latest conversations
     this.syncConversationHistory();
@@ -881,6 +906,9 @@ class PopupController {
         
         document.getElementById('session-duration').textContent = 
           `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      } else {
+        // Reset duration when not recording
+        document.getElementById('session-duration').textContent = '00:00:00';
       }
     }, 1000);
   }

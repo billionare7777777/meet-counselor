@@ -177,6 +177,7 @@ class MeetIntegration {
         
         // Stop listening on critical errors
         if (event.error === 'not-allowed' || event.error === 'audio-capture' || event.error === 'network') {
+          console.log(`❌ Critical error detected: ${event.error}, stopping speech recognition`);
           this.isListening = false;
           this.stopListening();
         }
@@ -434,15 +435,20 @@ class MeetIntegration {
   }
 
   async toggleCounselor() {
+    const previousState = this.isActive;
     this.isActive = !this.isActive;
+    console.log(`🔄 Toggle: isActive changed from ${previousState} to ${this.isActive}`);
     
     if (this.isActive) {
-      const success = await this.startListening();
-      if (!success) {
-        // If starting failed, set back to inactive
-        this.isActive = false;
-      }
+      console.log('🔄 Starting speech recognition...');
+      // Don't wait for startListening to complete - let it handle retries in the background
+      this.startListening().then(success => {
+        if (!success) {
+          console.log('⚠️ Initial start failed, but retry mechanism will handle it');
+        }
+      });
     } else {
+      console.log('🛑 Stopping speech recognition...');
       this.stopListening();
     }
 
@@ -558,21 +564,22 @@ class MeetIntegration {
   }
 
   stopListening() {
-    console.log('Stopping speech recognition...');
+    console.log('🛑 Stopping speech recognition...');
+    console.log(`🔄 Setting isActive from ${this.isActive} to false`);
     this.isActive = false; // Set to inactive to prevent auto-restart
     
     if (this.speechRecognition && this.isListening) {
       try {
         this.speechRecognition.stop();
         this.isListening = false;
-        console.log('Stopped listening for speech');
+        console.log('✅ Stopped listening for speech');
         return true;
       } catch (error) {
-        console.error('Failed to stop speech recognition:', error);
+        console.error('❌ Failed to stop speech recognition:', error);
         return false;
       }
     } else {
-      console.log('Speech recognition not available or not listening');
+      console.log('ℹ️ Speech recognition not available or not listening');
       this.isListening = false; // Ensure flag is set
       return true; // Consider it successful if already stopped
     }
@@ -587,6 +594,8 @@ class MeetIntegration {
         break;
       case 'START_RECORDING':
         console.log('Processing START_RECORDING message...');
+        this.isActive = true; // Set active flag for continuous mode
+        console.log(`🔄 Setting isActive to true for START_RECORDING`);
         const startResult = await this.startListening();
         console.log('START_RECORDING result:', startResult);
         const response = { success: startResult };
