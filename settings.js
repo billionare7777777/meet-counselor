@@ -84,6 +84,19 @@ class SettingsController {
       this.clearOtherInfo();
     });
 
+    // Job Information controls
+    document.getElementById('export-job-info').addEventListener('click', () => {
+      this.exportJobInfo();
+    });
+
+    document.getElementById('import-job-info').addEventListener('click', () => {
+      this.importJobInfo();
+    });
+
+    document.getElementById('clear-job-info').addEventListener('click', () => {
+      this.clearJobInfo();
+    });
+
     // All Settings controls
     document.getElementById('export-all-settings').addEventListener('click', () => {
       this.exportAllSettings();
@@ -185,6 +198,18 @@ class SettingsController {
     this.setFieldValue('other-relationship', this.getFieldValueFromStorage('other-relationship') || this.settings.otherInfo?.relationship || '');
     this.setFieldValue('other-context', this.getFieldValueFromStorage('other-context') || this.settings.otherInfo?.context || '');
 
+    // Job Information - prioritize localStorage over settings
+    this.setFieldValue('job-title', this.getFieldValueFromStorage('job-title') || this.settings.jobInfo?.jobTitle || '');
+    this.setFieldValue('budget-type', this.getFieldValueFromStorage('budget-type') || this.settings.jobInfo?.budgetType || '');
+    this.setFieldValue('budget-amount', this.getFieldValueFromStorage('budget-amount') || this.settings.jobInfo?.budgetAmount || '');
+    this.setFieldValue('budget-currency', this.getFieldValueFromStorage('budget-currency') || this.settings.jobInfo?.budgetCurrency || '');
+    this.setFieldValue('job-description', this.getFieldValueFromStorage('job-description') || this.settings.jobInfo?.jobDescription || '');
+    this.setFieldValue('my-proposal', this.getFieldValueFromStorage('my-proposal') || this.settings.jobInfo?.myProposal || '');
+    this.setFieldValue('chat-history', this.getFieldValueFromStorage('chat-history') || this.settings.jobInfo?.chatHistory || '');
+    this.setFieldValue('timeline-start', this.getFieldValueFromStorage('timeline-start') || this.settings.jobInfo?.timelineStart || '');
+    this.setFieldValue('timeline-end', this.getFieldValueFromStorage('timeline-end') || this.settings.jobInfo?.timelineEnd || '');
+    this.setFieldValue('timeline-details', this.getFieldValueFromStorage('timeline-details') || this.settings.jobInfo?.timelineDetails || '');
+
     // Additional Settings - prioritize localStorage over settings
     const autoTranslateValue = this.getFieldValueFromStorage('auto-translate');
     this.setFieldValue('auto-translate', autoTranslateValue !== null ? autoTranslateValue : (this.settings.additional?.autoTranslate || false));
@@ -252,6 +277,18 @@ class SettingsController {
         ageRange: this.getFieldValue('other-age-range'),
         relationship: this.getFieldValue('other-relationship'),
         context: this.getFieldValue('other-context')
+      },
+      jobInfo: {
+        jobTitle: this.getFieldValue('job-title'),
+        budgetType: this.getFieldValue('budget-type'),
+        budgetAmount: this.getFieldValue('budget-amount'),
+        budgetCurrency: this.getFieldValue('budget-currency'),
+        jobDescription: this.getFieldValue('job-description'),
+        myProposal: this.getFieldValue('my-proposal'),
+        chatHistory: this.getFieldValue('chat-history'),
+        timelineStart: this.getFieldValue('timeline-start'),
+        timelineEnd: this.getFieldValue('timeline-end'),
+        timelineDetails: this.getFieldValue('timeline-details')
       },
         additional: {
           autoTranslate: this.getFieldValue('auto-translate'),
@@ -650,6 +687,121 @@ class SettingsController {
     }
   }
 
+  exportJobInfo() {
+    try {
+      const jobInfoData = {
+        jobTitle: this.getFieldValue('job-title'),
+        budgetType: this.getFieldValue('budget-type'),
+        budgetAmount: this.getFieldValue('budget-amount'),
+        budgetCurrency: this.getFieldValue('budget-currency'),
+        jobDescription: this.getFieldValue('job-description'),
+        myProposal: this.getFieldValue('my-proposal'),
+        chatHistory: this.getFieldValue('chat-history'),
+        timelineStart: this.getFieldValue('timeline-start'),
+        timelineEnd: this.getFieldValue('timeline-end'),
+        timelineDetails: this.getFieldValue('timeline-details')
+      };
+
+      const data = {
+        type: 'Job Information',
+        data: jobInfoData,
+        exportDate: new Date().toISOString(),
+        version: '1.0.0'
+      };
+
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `meet-counselor-job-info-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      this.showSuccess('Job Information exported successfully');
+    } catch (error) {
+      console.error('Error exporting Job Information:', error);
+      this.showError('Failed to export Job Information');
+    }
+  }
+
+  importJobInfo() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    
+    input.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      try {
+        const text = await file.text();
+        const data = JSON.parse(text);
+        
+        if (data.type === 'Job Information' && data.data) {
+          // Import the data
+          this.setFieldValue('job-title', data.data.jobTitle || '');
+          this.setFieldValue('budget-type', data.data.budgetType || '');
+          this.setFieldValue('budget-amount', data.data.budgetAmount || '');
+          this.setFieldValue('budget-currency', data.data.budgetCurrency || '');
+          this.setFieldValue('job-description', data.data.jobDescription || '');
+          this.setFieldValue('my-proposal', data.data.myProposal || '');
+          this.setFieldValue('chat-history', data.data.chatHistory || '');
+          this.setFieldValue('timeline-start', data.data.timelineStart || '');
+          this.setFieldValue('timeline-end', data.data.timelineEnd || '');
+          this.setFieldValue('timeline-details', data.data.timelineDetails || '');
+
+          // Save to localStorage
+          const fields = ['job-title', 'budget-type', 'budget-amount', 'budget-currency', 'job-description', 'my-proposal', 'chat-history', 'timeline-start', 'timeline-end', 'timeline-details'];
+          fields.forEach(fieldName => {
+            const field = document.getElementById(fieldName);
+            if (field) {
+              this.saveFieldToLocalStorage(field);
+            }
+          });
+
+          // Save settings to Chrome storage as well
+          await this.saveSettings();
+
+          this.showSuccess('Job Information imported successfully');
+        } else {
+          throw new Error('Invalid file format');
+        }
+      } catch (error) {
+        console.error('Error importing Job Information:', error);
+        this.showError('Failed to import Job Information. Please check the file format.');
+      }
+    };
+    
+    input.click();
+  }
+
+  clearJobInfo() {
+    if (confirm('Are you sure you want to clear all Job Information? This action cannot be undone.')) {
+      try {
+        const fields = ['job-title', 'budget-type', 'budget-amount', 'budget-currency', 'job-description', 'my-proposal', 'chat-history', 'timeline-start', 'timeline-end', 'timeline-details'];
+        
+        fields.forEach(fieldName => {
+          const field = document.getElementById(fieldName);
+          if (field) {
+            field.value = '';
+            this.saveFieldToLocalStorage(field);
+          }
+        });
+
+        // Save settings to Chrome storage as well
+        this.saveSettings();
+
+        this.showSuccess('Job Information cleared successfully');
+      } catch (error) {
+        console.error('Error clearing Job Information:', error);
+        this.showError('Failed to clear Job Information');
+      }
+    }
+  }
+
   // Other Party's Information methods
   exportOtherInfo() {
     try {
@@ -778,6 +930,18 @@ class SettingsController {
           relationship: this.getFieldValue('other-relationship'),
           context: this.getFieldValue('other-context')
         },
+        jobInfo: {
+          jobTitle: this.getFieldValue('job-title'),
+          budgetType: this.getFieldValue('budget-type'),
+          budgetAmount: this.getFieldValue('budget-amount'),
+          budgetCurrency: this.getFieldValue('budget-currency'),
+          jobDescription: this.getFieldValue('job-description'),
+          myProposal: this.getFieldValue('my-proposal'),
+          chatHistory: this.getFieldValue('chat-history'),
+          timelineStart: this.getFieldValue('timeline-start'),
+          timelineEnd: this.getFieldValue('timeline-end'),
+          timelineDetails: this.getFieldValue('timeline-details')
+        },
         additional: {
           autoTranslate: this.getFieldValue('auto-translate'),
           saveHistory: this.getFieldValue('save-history'),
@@ -855,6 +1019,20 @@ class SettingsController {
             this.setFieldValue('other-age-range', data.otherInfo.ageRange || '');
             this.setFieldValue('other-relationship', data.otherInfo.relationship || '');
             this.setFieldValue('other-context', data.otherInfo.context || '');
+          }
+
+          // Import Job Information
+          if (data.jobInfo) {
+            this.setFieldValue('job-title', data.jobInfo.jobTitle || '');
+            this.setFieldValue('budget-type', data.jobInfo.budgetType || '');
+            this.setFieldValue('budget-amount', data.jobInfo.budgetAmount || '');
+            this.setFieldValue('budget-currency', data.jobInfo.budgetCurrency || '');
+            this.setFieldValue('job-description', data.jobInfo.jobDescription || '');
+            this.setFieldValue('my-proposal', data.jobInfo.myProposal || '');
+            this.setFieldValue('chat-history', data.jobInfo.chatHistory || '');
+            this.setFieldValue('timeline-start', data.jobInfo.timelineStart || '');
+            this.setFieldValue('timeline-end', data.jobInfo.timelineEnd || '');
+            this.setFieldValue('timeline-details', data.jobInfo.timelineDetails || '');
           }
 
           // Import Additional Settings

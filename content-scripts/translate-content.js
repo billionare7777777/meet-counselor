@@ -1,4 +1,15 @@
 // Content script for Google Translate integration
+// Prevent multiple initializations using a more robust approach
+(function() {
+  // Check if already initialized
+  if (window.meetCounselorTranslateIntegration) {
+    console.log('Translate integration already initialized, skipping...');
+    return;
+  }
+  
+  // Mark as initialized
+  window.meetCounselorTranslateIntegration = true;
+
 class TranslateIntegration {
   constructor() {
     this.isActive = false;
@@ -935,6 +946,8 @@ class TranslateIntegration {
   }
 
   handleMessage(message, sender, sendResponse) {
+    console.log('📨 Google Translate received message:', message.type, 'Content:', message.content || message.text);
+    
     switch (message.type) {
       case 'SEND_TO_TRANSLATE':
         this.handleIncomingText(message.text);
@@ -943,21 +956,93 @@ class TranslateIntegration {
         this.handleIncomingText(message.text);
         break;
       case 'INSERT_TRANSLATE_CONTENT':
+        console.log('🚀 Processing INSERT_TRANSLATE_CONTENT message');
         this.insertContentToTranslate(message.content);
+        break;
+      case 'REPLACE_ALL_CONVERSATIONS':
+        console.log('🚀 Processing REPLACE_ALL_CONVERSATIONS message');
+        this.replaceAllConversations(message.content, message.conversationCount);
         break;
     }
   }
 
   insertContentToTranslate(content) {
     try {
+      console.log('🌐 AUTO-TRANSLATE: Appending content to Google Translate:', content);
+      
       // Find the Google Translate input textarea
       const sourceTextarea = document.querySelector('[data-ved] textarea, [jsname="BJE2fc"], textarea[aria-label*="Source text"], textarea[aria-label*="텍스트 입력"]');
       
       if (sourceTextarea) {
-        // Clear existing content
-        sourceTextarea.value = '';
+        console.log('✅ Found Google Translate textarea');
         
-        // Set the new content
+        // Get existing content
+        const existingContent = sourceTextarea.value;
+        console.log('📝 Existing content:', existingContent);
+        
+        // Append new content instead of replacing
+        let newContent;
+        if (existingContent && existingContent.trim()) {
+          // Add new content with a separator
+          newContent = existingContent + '\n\n' + content;
+        } else {
+          // If no existing content, just set the new content
+          newContent = content;
+        }
+        
+        // Set the combined content
+        sourceTextarea.value = newContent;
+        
+        // Trigger input events to make Google Translate recognize the content
+        sourceTextarea.dispatchEvent(new Event('input', { bubbles: true }));
+        sourceTextarea.dispatchEvent(new Event('change', { bubbles: true }));
+        
+        // Focus the textarea to ensure it's active
+        sourceTextarea.focus();
+        
+        console.log('✅ Content successfully appended and events triggered');
+        console.log('📋 Full conversation now in Google Translate:', newContent);
+        console.log('🔄 Google Translate should now automatically translate the full conversation');
+      } else {
+        console.error('❌ Could not find Google Translate textarea');
+        // Try alternative selectors
+        const alternativeTextarea = document.querySelector('textarea[placeholder*="텍스트"], textarea[placeholder*="Text"]');
+        if (alternativeTextarea) {
+          console.log('✅ Found alternative textarea');
+          
+          // Append to alternative textarea as well
+          const existingContent = alternativeTextarea.value;
+          const newContent = existingContent && existingContent.trim() 
+            ? existingContent + '\n\n' + content 
+            : content;
+          
+          alternativeTextarea.value = newContent;
+          alternativeTextarea.dispatchEvent(new Event('input', { bubbles: true }));
+          alternativeTextarea.dispatchEvent(new Event('change', { bubbles: true }));
+          alternativeTextarea.focus();
+          console.log('✅ Content appended using alternative selector');
+        } else {
+          console.error('❌ No textarea found with any selector');
+        }
+      }
+    } catch (error) {
+      console.error('❌ Error appending content to Google Translate:', error);
+    }
+  }
+
+  replaceAllConversations(content, conversationCount) {
+    try {
+      console.log('📚 REPLACE ALL CONVERSATIONS: Setting complete conversation history in Google Translate');
+      console.log('📊 Conversation count:', conversationCount);
+      console.log('📋 Full conversation content:', content);
+      
+      // Find the Google Translate input textarea
+      const sourceTextarea = document.querySelector('[data-ved] textarea, [jsname="BJE2fc"], textarea[aria-label*="Source text"], textarea[aria-label*="텍스트 입력"]');
+      
+      if (sourceTextarea) {
+        console.log('✅ Found Google Translate textarea');
+        
+        // Replace ALL content with the complete conversation history
         sourceTextarea.value = content;
         
         // Trigger input events to make Google Translate recognize the content
@@ -967,21 +1052,28 @@ class TranslateIntegration {
         // Focus the textarea to ensure it's active
         sourceTextarea.focus();
         
-        console.log('Content inserted into Google Translate:', content);
+        console.log('✅ Complete conversation history set and events triggered');
+        console.log('📋 All conversations now in Google Translate:', content);
+        console.log('🔄 Google Translate should now automatically translate ALL conversations');
       } else {
-        console.error('Could not find Google Translate textarea');
+        console.error('❌ Could not find Google Translate textarea');
         // Try alternative selectors
         const alternativeTextarea = document.querySelector('textarea[placeholder*="텍스트"], textarea[placeholder*="Text"]');
         if (alternativeTextarea) {
+          console.log('✅ Found alternative textarea');
+          
+          // Replace ALL content in alternative textarea
           alternativeTextarea.value = content;
           alternativeTextarea.dispatchEvent(new Event('input', { bubbles: true }));
           alternativeTextarea.dispatchEvent(new Event('change', { bubbles: true }));
           alternativeTextarea.focus();
-          console.log('Content inserted using alternative selector');
+          console.log('✅ Complete conversation history set using alternative selector');
+        } else {
+          console.error('❌ No textarea found with any selector');
         }
       }
     } catch (error) {
-      console.error('Error inserting content to Google Translate:', error);
+      console.error('❌ Error replacing all conversations in Google Translate:', error);
     }
   }
 
@@ -1008,4 +1100,6 @@ class TranslateIntegration {
 
 // Initialize Translate integration
 new TranslateIntegration();
+
+})(); // End of IIFE
 

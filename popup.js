@@ -98,6 +98,9 @@ class PopupController {
       const historyResult = await chrome.storage.local.get(['conversationHistory']);
       this.conversationHistory = historyResult.conversationHistory || [];
 
+      // Sync conversation history with background script
+      await this.syncConversationHistory();
+
       // Load session data
       const sessionResult = await chrome.storage.local.get(['currentSession']);
       if (sessionResult.currentSession) {
@@ -111,6 +114,64 @@ class PopupController {
     } catch (error) {
       console.error('Error loading data:', error);
     }
+  }
+
+  async syncConversationHistory() {
+    try {
+      console.log('🔄 Syncing conversation history with background script...');
+      
+      // Get conversation history from background script
+      const response = await chrome.runtime.sendMessage({
+        type: 'GET_CONVERSATION_HISTORY'
+      });
+      
+      if (response && response.history) {
+        console.log('📚 Background script conversation history length:', response.history.length);
+        console.log('📚 Popup conversation history length:', this.conversationHistory.length);
+        
+        // Merge conversation histories, avoiding duplicates
+        const mergedHistory = this.mergeConversationHistories(this.conversationHistory, response.history);
+        
+        if (mergedHistory.length !== this.conversationHistory.length) {
+          console.log('🔄 Conversation history updated:', mergedHistory.length, 'total conversations');
+          this.conversationHistory = mergedHistory;
+          
+          // Save updated history to storage
+          await chrome.storage.local.set({
+            conversationHistory: this.conversationHistory
+          });
+          
+          console.log('💾 Updated conversation history saved to storage');
+        } else {
+          console.log('✅ Conversation history already up to date');
+        }
+      }
+    } catch (error) {
+      console.error('Error syncing conversation history:', error);
+    }
+  }
+
+  mergeConversationHistories(popupHistory, backgroundHistory) {
+    // Create a map to track unique conversations by timestamp and text
+    const conversationMap = new Map();
+    
+    // Add popup history first
+    popupHistory.forEach(conv => {
+      const key = `${conv.timestamp}_${conv.text}`;
+      conversationMap.set(key, conv);
+    });
+    
+    // Add background history, avoiding duplicates
+    backgroundHistory.forEach(conv => {
+      const key = `${conv.timestamp}_${conv.text}`;
+      if (!conversationMap.has(key)) {
+        conversationMap.set(key, conv);
+      }
+    });
+    
+    // Convert back to array and sort by timestamp
+    return Array.from(conversationMap.values())
+      .sort((a, b) => a.timestamp - b.timestamp);
   }
 
   async saveData() {
@@ -131,22 +192,57 @@ class PopupController {
     try {
       if (this.isRecording) {
         // Stop recording
-        await chrome.runtime.sendMessage({ type: 'STOP_RECORDING' });
-        this.isRecording = false;
-        this.sessionStartTime = null;
+        const response = await chrome.runtime.sendMessage({ type: 'STOP_RECORDING' });
+        console.log('Stop recording response:', response);
+        if (response && response.success) {
+          this.isRecording = false;
+          this.sessionStartTime = null;
+          this.showSuccess('Recording stopped successfully');
+        } else {
+          throw new Error('Failed to stop recording');
+        }
       } else {
         // Start recording
-        await chrome.runtime.sendMessage({ type: 'START_RECORDING' });
-        this.isRecording = true;
-        this.sessionStartTime = Date.now();
-        this.messageCount = 0;
+        const response = await chrome.runtime.sendMessage({ type: 'START_RECORDING' });
+        console.log('Start recording response:', response);
+        
+        // Check if response exists and has success property
+        if (response && typeof response === 'object' && response.success === true) {
+          this.isRecording = true;
+          this.sessionStartTime = Date.now();
+          this.messageCount = 0;
+          this.showSuccess('Recording started successfully');
+        } else {
+          // Log the actual response for debugging
+          console.error('Unexpected response format:', response);
+          
+          // Check if there's a specific error message from the background script
+          if (response && response.error) {
+            throw new Error(response.error);
+          } else {
+            throw new Error('Failed to start recording - unexpected response format');
+          }
+        }
       }
       
       await this.saveData();
       this.updateUI();
     } catch (error) {
       console.error('Error toggling recording:', error);
-      this.showError('Failed to toggle recording');
+      let errorMessage = 'Failed to toggle recording: ' + error.message;
+      
+      // Provide more helpful error messages for common issues
+      if (error.message.includes('Content script not available')) {
+        errorMessage = 'Please refresh the Google Meet page and try again.';
+      } else if (error.message.includes('Permission denied')) {
+        errorMessage = 'Microphone permission denied. Please click the microphone icon in your browser address bar and allow access for Google Meet, then try again.';
+      } else if (error.message.includes('No microphone found')) {
+        errorMessage = 'No microphone detected. Please check your microphone connection.';
+      } else if (error.message.includes('unexpected response format')) {
+        errorMessage = 'Recording service not responding correctly. Please refresh the page and try again.';
+      }
+      
+      this.showError(errorMessage);
     }
   }
 
@@ -168,7 +264,7 @@ class PopupController {
         type: 'GENERATE_CONVERSATION',
         context: {
           type: 'answer',
-          conversationHistory: this.conversationHistory.slice(-5),
+          conversationHistory: this.conversationHistory.slice(-15),
           userSettings: this.configValues
         }
       });
@@ -189,7 +285,7 @@ class PopupController {
         type: 'GENERATE_CONVERSATION',
         context: {
           type: 'chat',
-          conversationHistory: this.conversationHistory.slice(-5),
+          conversationHistory: this.conversationHistory.slice(-15),
           userSettings: this.configValues
         }
       });
@@ -211,7 +307,7 @@ class PopupController {
         context: {
           type: 'questions',
           questionType: questionType,
-          conversationHistory: this.conversationHistory.slice(-5),
+          conversationHistory: this.conversationHistory.slice(-15),
           userSettings: this.configValues
         }
       });
@@ -407,6 +503,9 @@ class PopupController {
     // Update configuration display
     this.updateConfigurationDisplay();
 
+    // Sync conversation history to get latest conversations
+    this.syncConversationHistory();
+
     // Update conversation list
     this.updateConversationList();
   }
@@ -452,6 +551,7 @@ class PopupController {
     const fields = [
       'my-name', 'my-location', 'my-age', 'my-gender', 'my-occupation', 'my-profile', 'my-experience', 'my-communication-style',
       'other-name', 'other-location', 'other-gender', 'other-age-range', 'other-relationship', 'other-context',
+      'job-title', 'budget-type', 'budget-amount', 'budget-currency', 'job-description', 'my-proposal', 'chat-history', 'timeline-start', 'timeline-end', 'timeline-details',
       'auto-translate', 'save-history', 'auto-generate-responses', 'target-language', 'response-style', 'response-length', 'conversation-context',
       'openai-api-key', 'custom-prompt', 'response-examples', 'conversation-goals', 'avoid-topics'
     ];
@@ -497,6 +597,16 @@ class PopupController {
       'other-age-range': 'otherInfo.ageRange',
       'other-relationship': 'otherInfo.relationship',
       'other-context': 'otherInfo.context',
+      'job-title': 'jobInfo.jobTitle',
+      'budget-type': 'jobInfo.budgetType',
+      'budget-amount': 'jobInfo.budgetAmount',
+      'budget-currency': 'jobInfo.budgetCurrency',
+      'job-description': 'jobInfo.jobDescription',
+      'my-proposal': 'jobInfo.myProposal',
+      'chat-history': 'jobInfo.chatHistory',
+      'timeline-start': 'jobInfo.timelineStart',
+      'timeline-end': 'jobInfo.timelineEnd',
+      'timeline-details': 'jobInfo.timelineDetails',
       'auto-translate': 'additional.autoTranslate',
       'save-history': 'additional.saveHistory',
       'auto-generate-responses': 'additional.autoGenerateResponses',
@@ -535,6 +645,9 @@ class PopupController {
 
   async pasteToGoogleTranslate(conversation, title) {
     try {
+      console.log('📝 Pasting conversation to Google Translate:', title);
+      console.log('💬 Conversation content:', conversation);
+      
       // Extract text content from the conversation
       let content;
       if (Array.isArray(conversation)) {
@@ -598,6 +711,7 @@ class PopupController {
         
         // Store current content for archiving
         this.currentGeneratedContent = conversation;
+        console.log('✅ Content pasted to Google Translate successfully');
       }
     } catch (error) {
       console.error('Error pasting to Google Translate:', error);
@@ -641,6 +755,9 @@ class PopupController {
 
   async archiveConversation(conversation, type) {
     try {
+      console.log('📚 Archiving conversation:', type);
+      console.log('💬 Conversation to archive:', conversation);
+      
       const archivedConversation = {
         id: Date.now(),
         type: type,
@@ -651,6 +768,7 @@ class PopupController {
 
       // Add to conversation history
       this.conversationHistory.push(archivedConversation);
+      console.log('📊 Total archived conversations:', this.conversationHistory.length);
 
       // Save to storage
       await chrome.storage.local.set({
@@ -659,6 +777,8 @@ class PopupController {
 
       // Update conversation list display
       this.updateConversationList();
+      
+      console.log('✅ Conversation archived successfully');
     } catch (error) {
       console.error('Error archiving conversation:', error);
     }
@@ -685,13 +805,18 @@ class PopupController {
 
   useGeneratedContent() {
     if (this.currentGeneratedContent) {
+      console.log('🚀 Using generated content in active tab');
+      console.log('📄 Content being sent:', this.currentGeneratedContent);
+      
       // Send content to active tab
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         if (tabs[0]) {
+          console.log('📤 Sending content to tab:', tabs[0].url);
           chrome.tabs.sendMessage(tabs[0].id, {
             type: 'INSERT_CONTENT',
             content: this.currentGeneratedContent
           });
+          console.log('✅ Content sent to active tab successfully');
         }
       });
       this.showSuccess('Content sent to active tab');

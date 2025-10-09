@@ -28,6 +28,12 @@
             </svg>
             Other Party's Information
           </button>
+          <button class="nav-item" data-tab="job-info">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12,3L1,9L12,15L21,10.09V17H23V9M5,13.18V17.18L12,21L19,17.18V13.18L12,17L5,13.18Z"/>
+            </svg>
+            Job Information
+          </button>
           <button class="nav-item" data-tab="conversation">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
               <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
@@ -40,18 +46,18 @@
             </svg>
             Additional Settings
           </button>
-            <button class="nav-item" data-tab="api-keys">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12.65,10C11.83,7.67 9.61,6 7,6A6,6 0 0,0 1,12A6,6 0 0,0 7,18C9.61,18 11.83,16.33 12.65,14H17V18A2,2 0 0,0 19,20H21V18A2,2 0 0,0 19,16H17V14H19A2,2 0 0,0 21,12V10A2,2 0 0,0 19,8H12.65M7,8A4,4 0 0,1 11,12A4,4 0 0,1 7,16A4,4 0 0,1 3,12A4,4 0 0,1 7,8Z"/>
-              </svg>
-              API Keys
-            </button>
-            <button class="nav-item" data-tab="prompt">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
-              </svg>
-              Prompt Settings
-            </button>
+          <button class="nav-item" data-tab="api-keys">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12.65,10C11.83,7.67 9.61,6 7,6A6,6 0 0,0 1,12A6,6 0 0,0 7,18C9.61,18 11.83,16.33 12.65,14H17V18A2,2 0 0,0 19,20H21V18A2,2 0 0,0 19,16H17V14H19A2,2 0 0,0 21,12V10A2,2 0 0,0 19,8H12.65M7,8A4,4 0 0,1 11,12A4,4 0 0,1 7,16A4,4 0 0,1 3,12A4,4 0 0,1 7,8Z"/>
+            </svg>
+            API Keys
+          </button>
+          <button class="nav-item" data-tab="prompt">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+            </svg>
+            Prompt Settings
+          </button>
         </nav>
       </div>
 
@@ -234,6 +240,85 @@
               
               <div class="history-list" id="history-list">
                 <div class="no-history">No conversation history available</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Job Information Tab -->
+          <div id="job-info" class="tab-content">
+            <div class="tab-header">
+              <h2>Job Information</h2>
+              <p>Enter job details to help generate more relevant business conversations</p>
+            </div>
+            
+            <div class="form-section">
+              <div class="info-controls">
+                <button type="button" class="btn btn-secondary" id="export-job-info">Export Job Info</button>
+                <button type="button" class="btn btn-secondary" id="import-job-info">Import Job Info</button>
+                <button type="button" class="btn btn-danger" id="clear-job-info">Clear Job Info</button>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="job-title">Job Title *</label>
+                  <input type="text" id="job-title" name="jobTitle" placeholder="e.g., Software Engineer, Project Manager" required>
+                </div>
+                <div class="form-group">
+                  <label for="budget-type">Budget Type</label>
+                  <select id="budget-type" name="budgetType">
+                    <option value="">Select budget type</option>
+                    <option value="hourly">Hourly Rate</option>
+                    <option value="fixed">Fixed Price</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="budget-amount">Budget Amount</label>
+                  <input type="number" id="budget-amount" name="budgetAmount" placeholder="Enter amount" min="0" step="0.01">
+                </div>
+                <div class="form-group">
+                  <label for="budget-currency">Currency</label>
+                  <select id="budget-currency" name="budgetCurrency">
+                    <option value="USD">USD ($)</option>
+                    <option value="EUR">EUR (€)</option>
+                    <option value="GBP">GBP (£)</option>
+                    <option value="KRW">KRW (₩)</option>
+                    <option value="JPY">JPY (¥)</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="job-description">Job Description</label>
+                <textarea id="job-description" name="jobDescription" placeholder="Describe the job requirements, responsibilities, and scope of work..." rows="4"></textarea>
+              </div>
+              
+              <div class="form-group">
+                <label for="my-proposal">My Proposal</label>
+                <textarea id="my-proposal" name="myProposal" placeholder="Describe your approach, methodology, and why you're the right fit for this job..." rows="4"></textarea>
+              </div>
+              
+              <div class="form-group">
+                <label for="chat-history">Chat History</label>
+                <textarea id="chat-history" name="chatHistory" placeholder="Previous conversations or discussions about this job..." rows="3"></textarea>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="timeline-start">Project Start Date</label>
+                  <input type="date" id="timeline-start" name="timelineStart">
+                </div>
+                <div class="form-group">
+                  <label for="timeline-end">Project End Date</label>
+                  <input type="date" id="timeline-end" name="timelineEnd">
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="timeline-details">Timeline Details</label>
+                <textarea id="timeline-details" name="timelineDetails" placeholder="Additional timeline information, milestones, or deadlines..." rows="3"></textarea>
               </div>
             </div>
           </div>
